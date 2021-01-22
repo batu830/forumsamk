@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style title="Intrepid: Moon" description="" user_selectable="1" export_version="2">
+  <templates/>
+  <properties>
+    <property property_name="pageBackground" group_name="page" title="Page background" description="The page background, behind all block elements, uses the styling rules defined here" property_type="css" value_type="" depends_on="" value_group="" display_order="20200" css_components="background,extra" addon_id="XF">
+      <value>{
+    "background-color": "@xf-pageBg",
+    "extra": "background: -webkit-linear-gradient(to bottom, #4a4b85, #4d6a8d);\nbackground: linear-gradient(to bottom, #4a4b85, #4d6a8d);\nbackground-attachment: fixed;"
+}</value>
+    </property>
+    <property property_name="paletteAccent1" group_name="palette" title="Accent 1" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2000" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#90accd"</value>
+    </property>
+    <property property_name="paletteAccent2" group_name="palette" title="Accent 2" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2100" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"rgb(136, 164, 196)"</value>
+    </property>
+    <property property_name="paletteAccent3" group_name="palette" title="Accent 3" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2200" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#6c6daa"</value>
+    </property>
+    <property property_name="uix_welcomeSection__style" group_name="uix_welcomeSection" title="Welcome section container" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-image": "@xf-uix_imagePath/images/welcome-moon.svg",
+    "border-radius": "@xf-borderRadiusMedium",
+    "padding-top": "60px",
+    "padding-bottom": "0",
+    "extra": "background-size: 160px;\nbackground-repeat: no-repeat;\nbackground-position: 10% 50%;"
+}</value>
+    </property>
+  </properties>
+</style>

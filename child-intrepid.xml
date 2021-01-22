@@ -1,0 +1,3401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style title="Intrepid" description="Launch Your Reality" user_selectable="1" base_version_id="2010871" export_version="2">
+  <templates>
+    <template title="PAGE_CONTAINER" type="public" addon_id="XF" version_id="2010670" version_string="2.1.6"><![CDATA[<!DOCTYPE html>
+
+<xf:set var="$siteName" value="{$xf.options.boardTitle}" />
+<xf:set var="$h1"><xf:h1 fallback="{$siteName}" /></xf:set>
+<xf:set var="$title"><xf:title formatter="%s | %s" fallback="{$xf.options.boardTitle}" /></xf:set>
+<xf:set var="$description"><xf:description /></xf:set>
+
+<xf:set var="$uix_htmlClasses"></xf:set>
+
+<xf:if is="property('uix_pageWidthToggle') != 'disabled'">
+	<xf:comment> UI.X width toggle class</xf:comment>
+	<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} uix_page--{{$uix_pageWidth}}</xf:set>
+</xf:if>
+
+<xf:if is="property('uix_navigationType') == 'sidebarNav'">
+	<xf:comment> UI.X sidebar navigation toggle class</xf:comment>
+	<xf:if is="!$uix_sidebarNavCollapsed">
+		<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} sidebarNav--active</xf:set>
+	</xf:if>
+</xf:if>
+
+<xf:if is="property('uix_collapsibleSidebar')">
+	<xf:comment> UI.X sidebar toggle class</xf:comment>
+	<xf:if is="$uix_sidebarCollapsed">
+		<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} uix_sidebarCollapsed</xf:set>
+	</xf:if>
+</xf:if>
+
+<xf:if is="{$uix_showWelcomeSection}">
+	<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} uix_hasWelcomeSection</xf:set>
+</xf:if>
+
+<xf:if is=" $selectedNavChildren is not empty">
+	<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} uix_hasSectionLinks</xf:set>
+</xf:if>
+
+<xf:comment>SectionLinks Breakpoints</xf:comment>
+<xf:set var="$uix_subNavContentStatic" value="0" />
+
+<xf:comment>--------- COMPONENT MARKUP MACROS ---------
+	Markup for components can/should be added here in an XF:set if
+	we want the components to have variably set locations
+</xf:comment>
+
+<xf:comment> --- Sidebar trigger --- </xf:comment>
+
+<xf:set var="$uix_sidebarTrigger__content">
+	<xf:if is="{$sidebar}">
+		<xf:if is="property('uix_collapsibleSidebar') && {$uix_canCollapseSidebar}">
+			<a class="uix_sidebarTrigger__component uix_sidebarTrigger {{ (property('uix_sidebarTriggerPosition') == 'sectionLinks') ? 'p-navgroup-link' : 'button'}}" data-xf-init="tooltip" title="{{ phrase('th_sidebar_uix')}}" rel="nofollow">
+				<xf:fa icon="fa-ellipsis-v" class="mdi mdi-dots-vertical" />
+				<span class="uix_sidebarTrigger--phrase">{{ phrase('th_sidebar_uix') }}</span>
+			</a>
+		</xf:if>
+		<xf:if is="property('uix_sidebarMobileCanvas')">
+			<a class="uix_sidebarCanvasTrigger uix_sidebarTrigger__component p-navgroup-link" data-xf-init="tooltip" title="{{ phrase('th_sidebar_uix')}}">
+				<xf:fa icon="fa-ellipsis-v" class="mdi mdi-dots-vertical" />
+				<span class="uix_sidebarTrigger--phrase">{{ phrase('th_sidebar_uix') }}</span>
+			</a>
+		</xf:if>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_sidebarTrigger__component" arg-location="" arg-content="">
+	<xf:if is="({$location} == property('uix_sidebarTriggerPosition')) || ({$location} == 'navigation')">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- Search bar --- </xf:comment>
+
+<xf:if is="!{$uix_hideNavigation}">
+	<xf:set var="$uix_search__component">
+		<xf:if is="$xf.visitor.canSearch()">
+			<div class="uix_searchBar">
+				<div class="uix_searchBarInner">
+					<form action="{{ link('search/search') }}" method="post" class="uix_searchForm" data-xf-init="quick-search">
+						<a class="uix_search--close">
+							<xf:fa icon="fa-window-close" class="uix_icon uix_icon--close" />
+						</a>
+						<xf:textbox autocomplete="off" class="js-uix_syncValue uix_searchInput uix_searchDropdown__trigger" data-uixsync="search" name="keywords" placeholder="{{ phrase('search...') }}" aria-label="{{ phrase('search') }}" data-menu-autofocus="true" />
+						<a href="{{ link('search') }}"
+						   class="uix_search--settings u-ripple"
+						   data-xf-key="{{ phrase('shortcut.search_menu')|for_attr }}"
+						   aria-label="{{ phrase('search')|for_attr }}"
+						   aria-expanded="false"
+						   aria-haspopup="true"
+						   title="{{ phrase('search')|for_attr }}">
+							<xf:fa icon="fa-cog" class="uix_icon uix_icon--settings" />
+						</a>
+						<span class="<xf:if is="property('uix_searchButton')">uix_search--submit</xf:if> uix_searchIcon">
+							<xf:fa icon="fa-search" class="uix_icon uix_icon--search" />
+						</span>
+						<xf:csrf />
+					</form>
+				</div>
+
+				<xf:if is="property('uix_searchIconBehavior') != 'dropdown'">
+					<a class="uix_searchIconTrigger p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search u-ripple"
+					   aria-label="{{ phrase('search') }}"
+					   aria-expanded="false"
+					   aria-haspopup="true"
+					   title="{{ phrase('search') }}">
+						<i aria-hidden="true"></i>
+					</a>
+				</xf:if>
+
+				<xf:if is="property('uix_searchIconBehavior') != 'expand'">
+					<a href="{{ link('search') }}"
+					   class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search u-ripple js-uix_minimalSearch__target"
+					   data-xf-click="menu"
+					   aria-label="{{ phrase('search') }}"
+					   aria-expanded="false"
+					   aria-haspopup="true"
+					   title="{{ phrase('search') }}">
+						<i aria-hidden="true"></i>
+					</a>
+				</xf:if>
+
+				<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+					<form action="{{ link('search/search') }}" method="post"
+						  class="menu-content"
+						  data-xf-init="quick-search">
+						<h3 class="menu-header">{{ phrase('search') }}</h3>
+						<!--[XF:search_menu:above_input]-->
+						<div class="menu-row">
+							<xf:if is="$searchConstraints">
+								<div class="inputGroup inputGroup--joined">
+									<xf:textbox name="keywords"
+												class="js-uix_syncValue"
+												data-uixsync="search"
+												placeholder="{{ phrase('search...') }}"
+												aria-label="{{ phrase('search') }}"
+												data-menu-autofocus="true" />
+									<xf:select name="constraints"
+											   class="js-quickSearch-constraint"
+											   aria-label="{{ phrase('search_within') }}">
+										<xf:option value="">{{ phrase('everywhere') }}</xf:option>
+										<xf:foreach loop="$searchConstraints" key="$constraintName" value="$constraint">
+											<xf:option value="{$constraint|json}">{$constraintName}</xf:option>
+										</xf:foreach>
+									</xf:select>
+								</div>
+								<xf:else />
+								<xf:textbox name="keywords"
+											class="js-uix_syncValue"
+											data-uixsync="search"
+											placeholder="{{ phrase('search...') }}"
+											aria-label="{{ phrase('search') }}"
+											data-menu-autofocus="true" />
+							</xf:if>
+						</div>
+
+						<!--[XF:search_menu:above_title_only]-->
+						<div class="menu-row">
+							<xf:checkbox standalone="true"><xf:option name="c[title_only]" label="{{ phrase('search_titles_only') }}" /></xf:checkbox>
+						</div>
+						<!--[XF:search_menu:above_member]-->
+						<div class="menu-row">
+							<div class="inputGroup">
+								<span class="inputGroup-text" id="ctrl_search_menu_by_member">{{ phrase('by:') }}</span>
+								<input type="text" class="input" name="c[users]" data-xf-init="auto-complete" placeholder="{{ phrase('member')|for_attr }}" aria-labelledby="ctrl_search_menu_by_member" />
+							</div>
+						</div>
+						<div class="menu-footer">
+							<span class="menu-footer-controls">
+								<xf:button type="submit" class="button--primary" icon="search" />
+								<xf:button href="{{ link('search') }}">{{ phrase('advanced_search...') }}</xf:button>
+							</span>
+						</div>
+
+						<xf:csrf />
+					</form>
+				</div>
+
+
+				<div class="menu menu--structural menu--wide uix_searchDropdown__menu" aria-hidden="true">
+					<form action="{{ link('search/search') }}" method="post"
+						  class="menu-content"
+						  data-xf-init="quick-search">
+						<!--[XF:search_menu:above_input]-->
+						<xf:if is="$searchConstraints">
+							<div class="menu-row">
+
+								<div class="inputGroup">
+									<input name="keywords"
+										   class="js-uix_syncValue"
+										   data-uixsync="search"
+										   placeholder="{{ phrase('search...') }}"
+										   aria-label="{{ phrase('search') }}"
+										   type="hidden" />
+									<xf:select name="constraints"
+											   class="js-quickSearch-constraint"
+											   aria-label="{{ phrase('search_within') }}">
+										<xf:option value="">{{ phrase('everywhere') }}</xf:option>
+										<xf:foreach loop="$searchConstraints" key="$constraintName" value="$constraint">
+											<xf:option value="{$constraint|json}">{$constraintName}</xf:option>
+										</xf:foreach>
+									</xf:select>
+								</div>
+							</div>
+							<xf:else />
+							<input name="keywords"
+								   class="js-uix_syncValue"
+								   data-uixsync="search"
+								   placeholder="{{ phrase('search...') }}"
+								   aria-label="{{ phrase('search') }}"
+								   type="hidden" />
+						</xf:if>
+
+						<!--[XF:search_menu:above_title_only]-->
+						<div class="menu-row">
+							<xf:checkbox standalone="true"><xf:option name="c[title_only]" label="{{ phrase('search_titles_only') }}" /></xf:checkbox>
+						</div>
+						<!--[XF:search_menu:above_member]-->
+						<div class="menu-row">
+							<div class="inputGroup">
+								<span class="inputGroup-text">{{ phrase('by:') }}</span>
+								<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="{{ phrase('member') }}" />
+							</div>
+						</div>
+						<div class="menu-footer">
+							<span class="menu-footer-controls">
+								<xf:button type="submit" class="button--primary" icon="search" />
+								<xf:button href="{{ link('search') }}" rel="nofollow">{{ phrase('th_advanced_uix...') }}</xf:button>
+							</span>
+						</div>
+
+						<xf:csrf />
+					</form>
+				</div>
+			</div>
+		</xf:if>
+	</xf:set>
+</xf:if>
+
+<xf:macro name="uix_search__component" arg-content="!" arg-location="!">
+	<xf:if is="(property('uix_searchPosition') == {$location}) || ({$location} == 'navigation')">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- whats new --- </xf:comment>
+
+<xf:if is="!property('uix_removeWhatsNewButtons')">
+<xf:set var="$uix_whatsNew__component">
+	<a href="{{ link('whats-new') }}"
+	   class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew"
+	   title="{{ phrase('whats_new')|for_attr }}">
+		<i aria-hidden="true"></i>
+		<span class="p-navgroup-linkText">{{ phrase('whats_new') }}</span>
+	</a>
+</xf:set>
+</xf:if>
+
+<xf:macro name="uix_whatsNew__component" arg-content="!" arg-location="!">
+	<xf:if is="({$xf.visitor.user_id} && property('uix_userTabsPosition') == {$location}) || ({$location} == 'navigation')">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- login tabs --- </xf:comment>
+
+<xf:set var="$uix_loginTabs__component">
+	<xf:if is="{$template} != 'login'">
+		<xf:if is="property('uix_loginStyle') == 'dropdown'">
+			<a href="{{ link('login') }}" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="menu">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('log_in') }}</span>
+			</a>
+			<div class="menu menu--structural menu--medium" data-menu="menu" aria-hidden="true" data-href="{{ link('login') }}"></div>
+		<xf:elseif is="property('uix_loginStyle') == 'modal'" />
+			<a href="{{ link('login') }}" class="p-navgroup-link u-ripple p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('log_in') }}</span>
+			</a>
+		<xf:elseif is="property('uix_loginStyle') == 'link'" />
+			<a href="{{ link('login') }}" class="p-navgroup-link u-ripple p-navgroup-link--textual p-navgroup-link--logIn" data-follow-redirects="on">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('log_in') }}</span>
+			</a>
+		<xf:elseif is="property('uix_loginStyle') == 'slidingPanel'" />
+			<a href="{{ link('login') }}" id="uix_loginPanel--trigger" class="p-navgroup-link u-ripple p-navgroup-link--textual p-navgroup-link--logIn" rel="nofollow" data-follow-redirects="on">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('log_in') }}</span>
+			</a>
+		</xf:if>
+	</xf:if>
+	<xf:if is="{$template} != 'register_form'">
+		<xf:if is="property('uix_loginStyle') != 'link'">
+			<a href="{{ link('register') }}" class="p-navgroup-link u-ripple p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('register') }}</span>
+			</a>
+		<xf:else />
+			<a href="{{ link('register') }}" class="p-navgroup-link u-ripple p-navgroup-link--textual p-navgroup-link--register" data-follow-redirects="on">
+				<i></i>
+				<span class="p-navgroup-linkText">{{ phrase('register') }}</span>
+			</a>
+		</xf:if>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_loginTabs__component" arg-content="!" arg-location="!">
+	<xf:if is="property('uix_loginTriggerPosition') == {$location} || ({$location} == 'navigation')">
+		<xf:if is="{$location} == 'tablinks'">
+		</xf:if>
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- user tabs --- </xf:comment>
+
+<xf:if is="!{$uix_hideNavigation}">
+	<xf:set var="$uix_userTabs__component">
+		<xf:if is="$xf.visitor.user_state == 'rejected' OR $xf.visitor.user_state == 'disabled'">
+			<a href="{{ link('account') }}"
+			   class="p-navgroup-link u-ripple p-navgroup-link--iconic p-navgroup-link--user">
+				<xf:avatar user="$xf.visitor" size="xxs" href="" />
+				<span class="p-navgroup-linkText">{$xf.visitor.username}</span>
+			</a>
+
+			<a href="{{ link('logout', null, {'t': csrf_token()}) }}" class="p-navgroup-link">
+				<span class="p-navgroup-linkText">{{ phrase('log_out') }}</span>
+			</a>
+			<xf:else />
+			<a href="{{ link('account') }}"
+			   class="p-navgroup-link u-ripple p-navgroup-link--iconic p-navgroup-link--user"
+			   data-xf-click="menu"
+			   data-xf-key="{{ phrase('shortcut.visitor_menu')|for_attr }}"
+			   data-menu-pos-ref="< .p-navgroup"
+			   aria-expanded="false"
+			   aria-haspopup="true">
+				<xf:avatar user="$xf.visitor" size="xxs" href="" />
+				<span class="p-navgroup-linkText">{$xf.visitor.username}</span>
+			</a>
+			<div class="menu menu--structural menu--wide menu--account" data-menu="menu" aria-hidden="true"
+				 data-href="{{ link('account/visitor-menu') }}"
+				 data-load-target=".js-visitorMenuBody">
+				<div class="menu-content js-visitorMenuBody">
+					<div class="menu-row">
+						{{ phrase('loading...') }}
+					</div>
+				</div>
+			</div>
+
+			<a href="{{ link('conversations') }}"
+			   class="p-navgroup-link u-ripple p-navgroup-link--iconic p-navgroup-link--conversations js-badge--conversations badgeContainer{{ $xf.visitor.conversations_unread ? ' badgeContainer--highlighted' : '' }}"
+			   data-badge="{$xf.visitor.conversations_unread|number}"
+			   data-xf-click="menu"
+			   data-xf-key="{{ phrase('shortcut.conversations_menu')|for_attr }}"
+			   data-menu-pos-ref="< .p-navgroup"
+			   aria-label="{{ phrase('inbox')|for_attr }}"
+			   aria-expanded="false"
+			   aria-haspopup="true">
+				<i aria-hidden="true"></i>
+				<span class="p-navgroup-linkText">{{ phrase('nav_inbox') }}</span>
+			</a>
+			<div class="menu menu--structural menu--medium" data-menu="menu" aria-hidden="true"
+				 data-href="{{ link('conversations/popup') }}"
+				 data-nocache="true"
+				 data-load-target=".js-convMenuBody">
+				<div class="menu-content">
+					<h3 class="menu-header">{{ phrase('conversations') }}</h3>
+					<div class="js-convMenuBody">
+						<div class="menu-row">{{ phrase('loading...') }}</div>
+					</div>
+					<div class="menu-footer menu-footer--split">
+						<span class="menu-footer-main">
+							<a href="{{ link('conversations') }}">{{ phrase('show_all...') }}</a>
+						</span>
+						<xf:if is="$xf.visitor.canStartConversation()">
+							<span class="menu-footer-opposite">
+								<a href="{{ link('conversations/add') }}">{{ phrase('start_new_conversation') }}</a>
+							</span>
+						</xf:if>
+					</div>
+				</div>
+			</div>
+
+			<a href="{{ link('account/alerts') }}"
+			   class="p-navgroup-link u-ripple p-navgroup-link--iconic p-navgroup-link--alerts js-badge--alerts badgeContainer{{ $xf.visitor.alerts_unread ? ' badgeContainer--highlighted' : '' }}"
+			   data-badge="{$xf.visitor.alerts_unread|number}"
+			   data-xf-click="menu"
+			   data-xf-key="{{ phrase('shortcut.alerts_menu')|for_attr }}"
+			   data-menu-pos-ref="< .p-navgroup"
+			   aria-label="{{ phrase('alerts')|for_attr }}"
+			   aria-expanded="false"
+			   aria-haspopup="true">
+				<i aria-hidden="true"></i>
+				<span class="p-navgroup-linkText">{{ phrase('nav_alerts') }}</span>
+			</a>
+			<div class="menu menu--structural menu--medium" data-menu="menu" aria-hidden="true"
+				 data-href="{{ link('account/alerts-popup') }}"
+				 data-nocache="true"
+				 data-load-target=".js-alertsMenuBody">
+				<div class="menu-content">
+					<h3 class="menu-header">{{ phrase('alerts') }}</h3>
+					<div class="js-alertsMenuBody">
+						<div class="menu-row">{{ phrase('loading...') }}</div>
+					</div>
+					<div class="menu-footer menu-footer--split">
+						<span class="menu-footer-main">
+							<a href="{{ link('account/alerts') }}">{{ phrase('show_all...') }}</a>
+						</span>
+						<span class="menu-footer-opposite">
+							<a href="{{ link('account/preferences') }}">{{ phrase('preferences') }}</a>
+						</span>
+					</div>
+				</div>
+			</div>
+		</xf:if>
+	</xf:set>
+</xf:if>
+
+<xf:macro name="uix_userTabs__component" arg-content="!" arg-location="!">
+	<xf:if is="property('uix_userTabsPosition') == {$location} || ({$location} == 'navigation')">
+		<xf:if is="{$location} == 'tablinks'">
+		</xf:if>
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:set var="$uix_socialMediaContent">
+	<xf:include template="uix_socialMedia" />
+</xf:set>
+
+<xf:macro name="uix_socialMedia__component" arg-content="" arg-location="">
+	<xf:if is="(property('uix_socialMediaPosition') == {$location}) || ({$location} == 'copyright')">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- Visitor tabs --- </xf:comment>
+
+<xf:if is="!{$uix_hideNavigation}">
+	<xf:macro name="uix_visitorTabs__component" arg-socialMediaContent="" arg-searchContent="!" arg-location="!" arg-whatsNewContent="!" arg-visitorContent="!" arg-loginTabsContent="!">
+		<xf:if contentcheck="true">
+			<xf:contentcheck>
+				<xf:if contentcheck="true">
+					<div class="p-navgroup p-account {{ $xf.visitor.user_id ? 'p-navgroup--member' : 'p-navgroup--guest' }}">
+						<xf:contentcheck>
+							<xf:if is="$xf.visitor.user_id">
+								<xf:macro name="uix_userTabs__component" arg-content="{$visitorContent}" arg-location="{$location}" />
+								<xf:else />
+								<xf:macro name="uix_loginTabs__component" arg-content="{$loginTabsContent}" arg-location="{$location}" />
+							</xf:if>
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+				<xf:if contentcheck="true">
+					<div class="p-navgroup p-discovery{{ !$xf.visitor.canSearch() ? ' p-discovery--noSearch' : '' }}">
+						<xf:contentcheck>
+							<xf:macro name="uix_whatsNew__component" arg-content="{$whatsNewContent}" arg-location="{$location}" />
+							<xf:macro name="uix_search__component" arg-content="{$searchContent}" arg-location="{$location}" />
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+				<xf:macro name="uix_socialMedia__component" arg-content="{$socialMediaContent}" arg-location="{$location}" />
+			</xf:contentcheck>
+		</xf:if>
+	</xf:macro>
+</xf:if>
+
+<xf:comment> --- Titlebar --- </xf:comment>
+
+<xf:set var="$uix_titlebar__component">
+	<xf:if is="!{$uix_hidePageTitle} || ( {$pageAction} && !property('uix_pageActionBreadcrumb') && (!property('uix_removePageAction') || {{ !in_array({$template}, ['forum_list', 'forum_new_posts', 'thtopics_forum_newest_posts', 'thtrending_trending_view', 'thtopics_forum_latest_threads', 'thtopics_topic_list']) }} )
+			   )">
+		<xf:if is="$headerHtml is not empty">
+			<div class="p-body-header">
+				<div class="pageContent">
+					{$headerHtml|raw}
+				</div>
+			</div>
+			<xf:elseif contentcheck="true" />
+			<div class="p-body-header">
+				<div class="pageContent">
+					<xf:contentcheck>
+						<xf:if contentcheck="true">
+							<div class="uix_headerInner">
+								<xf:contentcheck>
+									<xf:if contentcheck="true">
+										<div class="p-title {{ $noH1 ? 'p-title--noH1' : '' }}">
+											<xf:contentcheck>
+												<xf:if is="!$noH1">
+													<h1 class="p-title-value">{$h1}</h1>
+												</xf:if>
+											</xf:contentcheck>
+										</div>
+									</xf:if>
+
+									<xf:if is="$description is not empty">
+										<div class="p-description">{$description}</div>
+									</xf:if>
+								</xf:contentcheck>
+							</div>
+						</xf:if>
+						<xf:if contentcheck="true">
+							<div class="uix_headerInner--opposite">
+								<xf:contentcheck>
+									<xf:if is="!property('uix_pageActionBreadcrumb') && (!property('uix_removePageAction') || ({$template} != 'forum_list') )">
+										<xf:if contentcheck="true">
+											<div class="p-title-pageAction"><xf:contentcheck><xf:pageaction /></xf:contentcheck></div>
+										</xf:if>
+									</xf:if>
+									<xf:macro name="uix_sidebarTrigger__component" arg-content="{$uix_sidebarTrigger__content}" arg-location="titlebar" />
+								</xf:contentcheck>
+							</div>
+						</xf:if>
+					</xf:contentcheck>
+				</div>
+			</div>
+		</xf:if>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_titlebar__component" arg-location="!" arg-content="!">
+	<xf:if is="property('uix_titlebarLocation') === {$location}">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- Sidebar --- </xf:comment>
+
+<xf:set var="$uix_sidebar__component">
+	<xf:if is="$sidebar">
+		<div uix_component="MainSidebar" class="p-body-sidebar">
+			<div data-ocm-class="offCanvasMenu-backdrop"></div>
+			<div class="uix_sidebarInner {{ (property('uix_stickySidebar') == 'top') ? ' uix_stickyBodyElement' : '' }}">
+				<div class="uix_sidebar--scroller">
+					<xf:ad position="container_sidebar_above" />
+					<xf:macro name="welcomeSection" template="uix_welcomeSection" arg-location="sidebar" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+					<xf:foreach loop="$sidebar" value="$sidebarHtml">
+						{$sidebarHtml}
+					</xf:foreach>
+					<xf:ad position="container_sidebar_below" />
+				</div>
+			</div>
+		</div>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_sidebar__component" arg-location="!" arg-content="!">
+	<xf:if is="property('uix_sidebarLocation') === {$location}">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- Logo --- </xf:comment>
+
+<xf:set var="$uix_logo__component">
+	<div class="p-header-logo p-header-logo--image">
+		<a class="uix_logo" href="{{ ($xf.options.logoLink && $xf.homePageUrl) ? $xf.homePageUrl : link('index') }}">
+			<xf:if is="property('publicLogoUrl') || property('publicLogoUrl2x')">
+				<img src="{{ base_url(property('publicLogoUrl')) }}"
+					 alt="{$xf.options.boardTitle}"
+					 {{ property('publicLogoUrl2x') ? 'srcset="' . base_url(property('publicLogoUrl2x')) . ' 2x"' : '' }} />
+				<xf:else />
+				<div class="uix_logo--text"><xf:if is="{{ property('uix_logoIcon') }}"><i class="{{ property('uix_logoIcon') }} uix_logoIcon"></i></xf:if>{{ property('uix_logoText') }}</div>
+			</xf:if>
+		</a>
+		<xf:if is="property('uix_logoSmall')">
+			<a class="uix_logoSmall" href="{{ ($xf.options.logoLink && $xf.homePageUrl) ? $xf.homePageUrl : link('index') }}">
+				<img src="{{ base_url(property('uix_logoSmall')) }}"
+					 alt="{$xf.options.boardTitle}"
+					 />
+			</a>
+		</xf:if>
+	</div>
+</xf:set>
+
+<xf:macro name="uix_logo__component" arg-content="!">
+	{$content}
+</xf:macro>
+
+<xf:comment> --- staff bar --- </xf:comment>
+
+<xf:set var="$uix_staffbar__component">
+	<xf:if contentcheck="true">
+		<div class="p-staffBar <xf:if is="property('uix_stickyStaffBar')">uix_stickyBar</xf:if>">
+			<div class="pageContent">
+				<xf:contentcheck>
+					<xf:macro name="uix_socialMedia__component" arg-content="{$uix_socialMediaContent}" arg-location="staffBarLeft" />
+					<xf:if contentcheck="true">
+						<xf:comment> --- add primary side staff bar content here ---</xf:comment>
+						<xf:set var="$uix_alwaysStaffBar" value="1" />
+						<div class="p-staffBar-inner hScroller" data-xf-init="h-scroller">
+							<div class="hScroller-scroll">
+								<xf:contentcheck>
+									<xf:if is="$xf.visitor.is_moderator && $xf.session.unapprovedCounts.total">
+										<a href="{{ link('approval-queue') }}" class="p-staffBar-link badgeContainer badgeContainer--highlighted" data-badge="{$xf.session.unapprovedCounts.total|number}">
+											{{ phrase('approval_queue') }}
+										</a>
+									</xf:if>
+
+									<xf:if is="$xf.visitor.is_moderator && !$xf.options.reportIntoForumId && $xf.session.reportCounts.total">
+										<a href="{{ link('reports') }}"
+										   class="p-staffBar-link badgeContainer badgeContainer--visible {{ ($xf.session.reportCounts.total && ($xf.session.reportCounts.lastBuilt > $xf.session.reportLastRead) OR $xf.session.reportCounts.assigned) ? ' badgeContainer--highlighted' : '' }}"
+										   data-badge="{{ $xf.session.reportCounts.assigned ? $xf.session.reportCounts.assigned|number . ' / ' . $xf.session.reportCounts.total|number : $xf.session.reportCounts.total|number }}"
+										   title="{{ $xf.session.reportCounts.lastBuilt ? phrase('last_report_update:')|for_attr . ' ' . date_time($xf.session.reportCounts.lastBuilt) : '' }}">{{ phrase('reports') }}</a>
+									</xf:if>
+
+									<xf:if contentcheck="true">
+										<a class="p-staffBar-link menuTrigger" data-xf-key="alt+m" data-xf-click="menu" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true">{{ phrase('moderator') }}</a>
+										<div class="menu" data-menu="menu" aria-hidden="true">
+											<div class="menu-content">
+												<h4 class="menu-header">{{ phrase('moderator_tools') }}</h4>
+												<xf:contentcheck>
+													<!--[XF:mod_tools_menu:top]-->
+													<xf:if is="$xf.visitor.is_moderator">
+														<a href="{{ link('approval-queue') }}" class="menu-linkRow">{{ phrase('approval_queue') }}</a>
+													</xf:if>
+													<xf:if is="$xf.visitor.is_moderator && !$xf.options.reportIntoForumId">
+														<a href="{{ link('reports') }}" class="menu-linkRow" title="{{ $xf.session.reportCounts.lastBuilt ? 'Last report update: ' . date_time($xf.session.reportCounts.lastBuilt) : '' }}">{{ phrase('reports') }}</a>
+													</xf:if>
+													<!--[XF:mod_tools_menu:bottom]-->
+												</xf:contentcheck>
+											</div>
+										</div>
+									</xf:if>
+
+									<xf:if is="$xf.visitor.is_admin">
+										<a href="{{ base_url('admin.php') }}" class="p-staffBar-link" target="_blank">{{ phrase('admin') }}</a>
+									</xf:if>
+
+									<xf:if contentcheck="true">
+										<a href="{{ base_url('admin.php') }}" target="_blank" class="p-staffBar-link menuTrigger uix_adminTrigger" data-xf-click="menu" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true">
+											<xf:if is="$xf.visitor.is_admin">
+												{{ phrase('admin') }}
+												<xf:else />
+												{{ phrase('moderator') }}
+											</xf:if>
+										</a>
+										<div class="menu" data-menu="menu" aria-hidden="true">
+											<div class="menu-content">
+												<h4 class="menu-header">{{ phrase('moderator_tools') }}</h4>
+												<xf:contentcheck>
+													<!--[XF:mod_tools_menu:top]-->
+													<xf:if is="$xf.visitor.is_admin">
+														<a href="{{ base_url('admin.php') }}" target="_blank" class="menu-linkRow">{{ phrase('admin') }}</a>
+													</xf:if>
+													<xf:if is="$xf.visitor.is_moderator">
+														<a href="{{ link('approval-queue') }}" class="menu-linkRow">{{ phrase('approval_queue') }}</a>
+													</xf:if>
+													<xf:if is="$xf.visitor.is_moderator && !$xf.options.reportIntoForumId">
+														<a href="{{ link('reports') }}" class="menu-linkRow" title="{{ $xf.session.reportCounts.lastBuilt ? 'Last report update: ' . date_time($xf.session.reportCounts.lastBuilt) : '' }}">{{ phrase('reports') }}</a>
+													</xf:if>
+													<xf:if is="$xf.visitor.is_moderator && $xf.session.unapprovedCounts.total">
+														<a href="{{ link('approval-queue') }}" class="menu-linkRow badgeContainer badgeContainer--highlighted" data-badge="{$xf.session.unapprovedCounts.total|number}">
+															{{ phrase('approval_queue') }}
+														</a>
+													</xf:if>
+
+													<xf:if is="$xf.visitor.is_moderator && !$xf.options.reportIntoForumId && $xf.session.reportCounts.total">
+														<a href="{{ link('reports') }}"
+														   class="menu-linkRow badgeContainer badgeContainer--visible {{ ($xf.session.reportCounts.total && ($xf.session.reportCounts.lastBuilt > $xf.session.reportLastRead) OR $xf.session.reportCounts.assigned) ? ' badgeContainer--highlighted' : '' }}"
+														   data-badge="{{ $xf.session.reportCounts.assigned ? $xf.session.reportCounts.assigned|number . ' / ' . $xf.session.reportCounts.total|number : $xf.session.reportCounts.total|number }}"
+														   title="{{ $xf.session.reportCounts.lastBuilt ? phrase('last_report_update') . date_time($xf.session.reportCounts.lastBuilt) : '' }}">
+															{{ phrase('reports') }}
+														</a>
+													</xf:if>
+													<!--[XF:mod_tools_menu:bottom]-->
+												</xf:contentcheck>
+											</div>
+										</div>
+									</xf:if>
+								</xf:contentcheck>
+							</div>
+						</div>
+					</xf:if>
+
+					<xf:if contentcheck="true">
+						<div class="p-nav-opposite">
+							<xf:if is="property('uix_staffBarBreakpoint') != '100%'">
+								<xf:set var="$uix_responsiveStaffBar" value="1" />
+								<xf:else />
+								<xf:set var="$uix_alwaysStaffBar" value="1" />
+							</xf:if>
+							<xf:contentcheck>
+								<xf:macro name="uix_visitorTabs__component" arg-socialMediaContent="{$uix_socialMediaContent}" arg-whatsNewContent="{$uix_whatsNew__component}" arg-searchContent="{$uix_search__component}" arg-loginTabsContent="{$uix_loginTabs__component}" arg-visitorContent="{$uix_userTabs__component}" arg-location="staffBar" />
+							</xf:contentcheck>
+						</div>
+					</xf:if>
+
+				</xf:contentcheck>
+			</div>
+		</div>
+	</xf:if>
+</xf:set>
+
+<xf:if is="!{$uix_alwaysStaffBar} && {$uix_responsiveStaffBar}">
+	<xf:set var="$uix_htmlClasses">{$uix_htmlClasses} uix_responsiveStaffBar</xf:set>
+</xf:if>
+
+<xf:macro name="uix_staffbar__component" arg-content="!">
+	{$content}
+</xf:macro>
+
+<xf:comment> --- section links --- </xf:comment>
+
+<xf:if is="!{$uix_hideNavigation}">
+	<xf:set var="$subNavHtml">
+		<xf:if contentcheck="true">
+			<div class="p-sectionLinks">
+				<div class="pageContent">
+					<xf:contentcheck>
+						<xf:if is="property('uix_viewportWidthRemoveSubNav') != '100%'">
+							<xf:if is="$selectedNavChildren is not empty">
+								<xf:set var="$uix_subNavContentStatic" value="1" />
+								<xf:set var="$uix_htmlClasses">{{$uix_htmlClasses}} uix_hasSectionLinks</xf:set>
+								<div class="p-sectionLinks-inner hScroller" data-xf-init="h-scroller">
+									<div class="hScroller-scroll">
+										<ul class="p-sectionLinks-list">
+											<xf:foreach loop="$selectedNavChildren" key="$navId" value="$navEntry" i="$i">
+												<li>
+													<xf:macro name="nav_entry" arg-navId="{$navId}" arg-nav="{$navEntry}" arg-shortcut="alt+{$i}" />
+												</li>
+											</xf:foreach>
+										</ul>
+									</div>
+								</div>
+							</xf:if>
+							<xf:if contentcheck="true">
+								<div class="p-nav-opposite">
+									<xf:contentcheck>
+										<xf:if contentcheck="true">
+											<xf:set var="$uix_subNavContentStatic" value="1" />
+											<xf:contentcheck>
+												<xf:macro name="uix_visitorTabs__component" arg-socialMediaContent="{$uix_socialMediaContent}" arg-whatsNewContent="{$uix_whatsNew__component}" arg-searchContent="{$uix_search__component}" arg-loginTabsContent="{$uix_loginTabs__component}" arg-visitorContent="{$uix_userTabs__component}" arg-location="tablinks" />
+											</xf:contentcheck>
+										</xf:if>
+										<xf:macro name="uix_sidebarTrigger__component" arg-content="{$uix_sidebarTrigger__content}" arg-location="sectionLinks" />
+									</xf:contentcheck>
+								</div>
+							</xf:if>
+						</xf:if>
+					</xf:contentcheck>
+				</div>
+			</div>
+			<xf:elseif is="{$selectedNavEntry}" />
+			<div class="p-sectionLinks p-sectionLinks--empty"></div>
+		</xf:if>
+	</xf:set>
+</xf:if>
+
+<xf:comment> --- UIX sidebar navigation --- </xf:comment>
+
+<xf:set var="$uix_sidebarNav__component">
+	<div class="uix_sidebarNav">
+		<div class="uix_sidebarNav__inner <xf:if is="property('uix_stickySidebar') != 'disabled'"> uix_stickyBodyElement</xf:if>">
+			<div class="uix_sidebar--scroller">
+				<xf:if contentcheck="true">
+					<ul class="uix_sidebarNavList js-offCanvasNavSource">
+						<xf:contentcheck>
+							<xf:foreach loop="$navTree" key="$navSection" value="$navEntry" i="$i" if="{{ $navSection != $xf.app.defaultNavigationId }}">
+								<li class="uix_sidebarNavList__listItem">
+									<xf:macro name="nav_entry"
+											  arg-sidebarNav="1"
+											  arg-navId="{$navSection}"
+											  arg-nav="{$navEntry}"
+											  arg-selected="{{ $navSection == $pageSection }}"
+											  arg-shortcut="{$i}"/>
+								</li>
+							</xf:foreach>
+						</xf:contentcheck>
+					</ul>
+				</xf:if>
+				<xf:if is="$xf.visitor.user_id">
+					<ul class="uix_sidebarNavList">
+						<li><div class="p-navEl u-ripple {{$uix_myAccountLinks == 'profile' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="profile" href="{{ link('members', $xf.visitor) }}" class="p-navEl-link">{{ phrase('th_profile_uix') }}</a></div></div></li>
+						<li><div class="p-navEl u-ripple {{$uix_myAccountLinks == 'alerts' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="alerts" href="{{ link('account/alerts') }}" class="p-navEl-link">{{ phrase('alerts')}}</a></div></div></li>
+						<li><div class="p-navEl u-ripple {{$uix_myAccountLinks == 'settings' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="settings" href="{{ link('account/preferences') }}" class="p-navEl-link">{{ phrase('settings')}}</a></div></div></li>
+					</ul>
+				</xf:if>
+				<xf:if contentcheck="true">
+					<div class="uix_sidebarNav__inner__widgets">
+						<xf:contentcheck>
+							{$uix_sidebarNavWidgets|raw}
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+			</div>
+		</div>
+	</div>
+</xf:set>
+
+<xf:macro name="uix_sidebarNav__component" arg-content="!">
+	{$content}
+</xf:macro>
+
+<xf:comment> --- UIX main tab component --- </xf:comment>
+
+<xf:set var="$uix_mainTabsOffset">
+	[
+		{
+			"breakpoint": "0",
+			"offset": "0"
+		}
+	<xf:if is="{$uix_responsiveStaffBar} && !{$uix_alwaysStaffBar}">
+	,{
+		"breakpoint": "{{ property('uix_staffBarBreakpoint')|escape('json') }}",
+		"offset": "{{property('uix_stickyStaffBarHeight')|escape('json')}}"
+	}	
+	</xf:if>
+	<xf:if is="{$uix_alwaysStaffBar}">
+	,{
+		"breakpoint": "0",
+		"offset": "{{property('uix_stickyStaffBarHeight')|escape('json')}}"
+	}	
+	</xf:if>
+	<xf:if is="{{property('publicNavSticky')}} != 'none'">
+			,{
+				"breakpoint": "0",
+				"offset": "{{property('uix_stickyNavHeight')|escape('json')}}"
+			}		
+	<xf:if is="{{property('publicNavSticky')}} == 'all' && {$uix_subNavContentStatic}" />		
+			,{
+				"breakpoint": "{{ property('uix_viewportWidthRemoveSubNav')|escape('json') }}",
+				"offset": "{{(property('uix_stickySectionLinkHeight'))|escape('json')}}"
+			}
+	</xf:if>
+	]
+</xf:set>
+
+<xf:set var="$uix_mainTabComponent">
+	<xf:if contentcheck="true">
+		<div class="block uix_mainTabBar <xf:if is="{{ property('uix_mainTabsSticky')}}">uix_stickyBar</xf:if>" data-top-offset-breakpoints="{$uix_mainTabsOffset|for_attr}">
+			<div class="block-tabHeader tabs hScroller" data-xf-init="h-scroller">
+				<span class="hScroller-scroll">
+					<xf:contentcheck>
+						<xf:if is="{$uix_mainTabSets}">
+							<xf:set var="$uix_hasMainTabs" value="1" />
+							<xf:macro template="uix_mainTabSets" name="{$uix_mainTabSets}" arg-activeTab="{$uix_mainTabActive}" />
+						</xf:if>
+					</xf:contentcheck>
+				</span>
+			</div>
+		</div>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_mainTabComponent" arg-content="!" arg-location="!">
+	<xf:if is="property('uix_tabBarLocation') === {$location} && property('uix_enableMainTabs')">
+		{{$content}}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- Canvases --- </xf:comment>
+
+<xf:macro name="uix_canvasTab" arg-icon="!" arg-location="!" arg-canvas="!" arg-type="!">
+	<xf:if is="{$location} == {$canvas}">
+		<div class="uix_canvasTab uix_canvasTab__{{$type}}" data-target="uix_canvasPanel__{{$type}}">
+			<xf:fa icon="fa-{$icon}" class="uix_icon uix_icon--{$icon}" />
+		</div>
+	</xf:if>
+</xf:macro>
+
+<xf:macro name="uix_canvasTabs" arg-location="!">
+	<div class="uix_canvas__tabs">
+		<xf:macro name="uix_canvasTab" arg-icon="list" arg-type="navigation" arg-location="{{property('uix_canvas_location_navigation')}}" arg-canvas="{$location}"/>
+		<xf:macro name="uix_canvasTab" arg-icon="grid" arg-type="sidebar" arg-location="{{property('uix_canvas_location_sidebar')}}" arg-canvas="{$location}"/>
+		<xf:macro name="uix_canvasTab" arg-icon="user" arg-type="account" arg-location="{{property('uix_canvas_location_visitorTabs')}}" arg-canvas="{$location}"/>
+		<xf:macro name="uix_canvasTab" arg-icon="email" arg-type="conversations" arg-location="{{property('uix_canvas_location_visitorTabs')}}" arg-canvas="{$location}"/>
+		<xf:macro name="uix_canvasTab" arg-icon="alert" arg-type="alerts" arg-location="{{property('uix_canvas_location_visitorTabs')}}" arg-canvas="{$location}"/>
+		<xf:macro name="uix_canvasTab" arg-icon="star" arg-type="custom" arg-location="{{property('uix_canvas_location_custom')}}" arg-canvas="{$location}"/>
+	</div>
+</xf:macro>
+
+<xf:comment>
+	<xf:set var="$uix_whatsNew__component">
+		<a href="{{ link('whats-new') }}"
+		   class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew"
+		   aria-label="{{ phrase('whats_new')|for_attr }}"
+		   title="{{ phrase('whats_new') }}">
+			<i aria-hidden="true"></i>
+			<span class="p-navgroup-linkText">{{ phrase('whats_new') }}</span>
+		</a>
+	</xf:set>
+
+	<xf:macro name="uix_whatsNew__component" arg-content="!" arg-location="!">
+		<xf:if is="property('uix_userTabsPosition') == {$location}">
+			{$content}
+		</xf:if>
+	</xf:macro>
+</xf:comment>
+
+<xf:comment> --- breadcrumb --- </xf:comment>
+
+<xf:if is="!{$uix_hideBreadcrumb}">
+	<xf:set var="$uix_breadcrumbCrumbContent">
+		<xf:set var="$position" value="{{ 0 }}" />
+
+		<xf:set var="$rootBreadcrumb" value="{$navTree.{$xf.options.rootBreadcrumb}}" />
+		<xf:if is="$rootBreadcrumb AND $rootBreadcrumb.href != $xf.uri">
+			<xf:set var="$position" value="{{ $position + 1 }}" />
+			<xf:macro name="crumb"
+					  arg-position="{$position}"
+					  arg-href="{$rootBreadcrumb.href}"
+					  arg-value="{$rootBreadcrumb.title}" />
+		</xf:if>
+
+		<xf:if is="$selectedNavEntry && $selectedNavEntry.href && $selectedNavEntry.href != $xf.uri && $selectedNavEntry.href != $rootBreadcrumb.href">
+			<xf:set var="$position" value="{{ $position + 1 }}" />
+			<xf:macro name="crumb"
+					  arg-position="{$position}"
+					  arg-href="{$selectedNavEntry.href}"
+					  arg-value="{$selectedNavEntry.title}" />
+		</xf:if>
+		<xf:foreach loop="$breadcrumbs" value="$breadcrumb" if="$breadcrumb.href != $xf.uri">
+			<xf:set var="$position" value="{{ $position + 1 }}" />
+			<xf:macro name="crumb"
+					  arg-position="{$position}"
+					  arg-href="{$breadcrumb.href}"
+					  arg-value="{$breadcrumb.value}" />
+		</xf:foreach>
+	</xf:set>
+</xf:if>
+
+<xf:set var="$breadcrumbCount">{{ count($breadcrumbs)|default(0) }}</xf:set>
+<xf:set var="$navEntryCount">{{ $selectedNavEntry == null ? 0 : 1 }}</xf:set>
+
+<xf:if is="{$uix_breadcrumbCrumbContent} && ({{ ($navEntryCount|escape + $breadcrumbCount|escape) != 1 }} || !property('uix_hideSingleCrumb'))">
+	<xf:set var="$uix_breadcrumbHasCrumbs" value="1" />
+</xf:if>
+
+<xf:macro name="breadcrumbs" arg-breadcrumbHasCrumbs="!" arg-crumbContent="!" arg-variant="">
+	<xf:if contentcheck="true">
+		<div class="breadcrumb block {{ $variant ? 'p-breadcrumb--' . $variant : '' }}">
+			<div class="pageContent">
+				<xf:contentcheck>
+					<xf:if is="{$breadcrumbHasCrumbs}">
+						<xf:if contentcheck="true">
+							<ul class="p-breadcrumbs {{ $variant ? 'p-breadcrumbs--' . $variant : '' }}"
+								itemscope itemtype="https://schema.org/BreadcrumbList">
+								<xf:contentcheck>
+									{{ $crumbContent }}
+								</xf:contentcheck>
+							</ul>
+						</xf:if>
+					</xf:if>
+				</xf:contentcheck>
+			</div>
+		</div>
+	</xf:if>
+</xf:macro>
+
+<xf:macro name="crumb" arg-href="!" arg-value="!" arg-position="{{ 0 }}">
+	<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+		<a href="{$href}" itemprop="item">
+			<xf:if is="{$href} == {$xf.homePageUrl} && property('uix_homeCrumbIcon')">
+				<xf:fa icon="fa-home" class="uix_icon uix_icon--home" />
+				<span style="display: none;" itemprop="name">{$value}</span>
+				<xf:else />
+				<span itemprop="name">{$value}</span>
+			</xf:if>
+		</a>
+		<xf:if is="$position"><meta itemprop="position" content="{$position}" /></xf:if>
+	</li>
+</xf:macro>
+
+
+<xf:comment> --- Top breadcrumb ---</xf:comment>
+
+<xf:set var="$uix_topBreadcrumb__component">
+	<xf:ad position="container_breadcrumb_top_above" />
+	<xf:macro name="breadcrumbs"
+			  arg-crumbContent="{$uix_breadcrumbCrumbContent}"
+			  arg-breadcrumbHasCrumbs="{$uix_breadcrumbHasCrumbs}" />
+	<xf:ad position="container_breadcrumb_top_below" />
+</xf:set>
+
+<xf:macro name="uix_topBreadcrumb__component" arg-location="" arg-content="!">
+	<xf:if is="property('uix_topBreadcrumbLocation') === {$location}">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+<xf:comment> --- bottom breadcrumb --- </xf:comment>
+
+<xf:set var="$uix_bottomBreadcrumb__component">
+	<xf:if is="!property('uix_removeBottomBreadcrumb')">
+		<xf:ad position="container_breadcrumb_bottom_above" />
+		<xf:macro name="breadcrumbs"
+				  arg-crumbContent="{$uix_breadcrumbCrumbContent}"
+				  arg-breadcrumbHasCrumbs="{$uix_breadcrumbHasCrumbs}"
+				  arg-variant="bottom" />
+		<xf:ad position="container_breadcrumb_bottom_below" />
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_bottomBreadcrumb__component" arg-content="!" arg-location="!">
+	<xf:if is="property('uix_bottomBreadcrumbLocation') == {$location}">
+		{$content}
+	</xf:if>
+</xf:macro>
+
+
+<xf:comment>------ NOTICES ---------</xf:comment>
+
+<xf:set var="$uix_notices">
+	<xf:if is="!{$uix_hideNotices}">
+		<xf:if is="$notices.block">
+			<xf:macro template="notice_macros" name="notice_list" arg-type="block" arg-notices="{$notices.block}" />
+		</xf:if>
+
+		<xf:if is="$notices.scrolling">
+			<xf:macro template="notice_macros" name="notice_list" arg-type="scrolling" arg-notices="{$notices.scrolling}" />
+		</xf:if>
+	</xf:if>
+</xf:set>
+
+<xf:macro name="uix_notices" arg-location="!" arg-content="!">
+	<xf:if is="{$location} == property('uix_noticeLocation')">
+		{{$content}}
+	</xf:if>
+</xf:macro>
+
+<xf:comment>------ FOOTER ---------</xf:comment>
+
+<xf:set var="$uix_footer">
+	<footer class="p-footer" id="footer">
+
+		<xf:if is="!{$uix_hideExtendedFooter} && property('uix_enableExtendedFooter')">
+			<xf:include template="uix_extendedFooter" />
+		</xf:if>
+
+		<div class="p-footer-inner">
+			<div class="pageContent">
+				<div class="p-footer-row">
+					<xf:if contentcheck="true">
+						<div class="p-footer-row-main">
+							<ul class="p-footer-linkList p-footer-choosers">
+								<xf:contentcheck>
+									<xf:if is="(property('uix_pageWidthToggle') != 'disabled') && $uix_canTogglePageWidth">
+										<li><a id="uix_widthToggle--trigger" data-xf-init="tooltip" title="{{ phrase('th_toggle_width_uix') }}" rel="nofollow"><xf:fa icon="fa-compress-alt" class="uix_icon uix_icon--collapse" /></a></li>
+									</xf:if>
+									<xf:if is="$xf.visitor.canChangeStyle() && !{{ property('uix_hideStyleChoose') }}">
+										<li><a href="{{ link('misc/style') }}" data-xf-click="overlay" data-xf-init="tooltip" title="{{ phrase('style_chooser') }}" rel="nofollow">{$xf.style.title}</a></li>
+									</xf:if>
+									<xf:if is="$xf.visitor.canChangeLanguage()">
+										<li><a href="{{ link('misc/language') }}" data-xf-click="overlay" data-xf-init="tooltip" title="{{ phrase('language_chooser') }}" rel="nofollow"><i class="fa fa-globe" aria-hidden="true"></i> {$xf.language.title}</a></li>
+									</xf:if>
+								</xf:contentcheck>
+							</ul>
+						</div>
+					</xf:if>
+				</div>
+				<div class="p-footer-row-opposite">
+					<ul class="p-footer-linkList">
+						<xf:if is="$xf.visitor.canUseContactForm()">
+							<xf:if is="$xf.contactUrl">
+								<li><a href="{$xf.contactUrl}" data-xf-click="{{ ($xf.options.contactUrl.overlay OR $xf.options.contactUrl.type == 'default') ? 'overlay' : '' }}">{{ phrase('contact_us') }}</a></li>
+							</xf:if>
+						</xf:if>
+
+						<xf:if is="$xf.tosUrl">
+							<li><a href="{$xf.tosUrl}">{{ phrase('terms_and_rules') }}</a></li>
+						</xf:if>
+
+						<xf:if is="$xf.privacyPolicyUrl">
+							<li><a href="{$xf.privacyPolicyUrl}">{{ phrase('privacy_policy') }}</a></li>
+						</xf:if>
+
+						<xf:if is="$xf.helpPageCount">
+							<li><a href="{{ link('help') }}">{{ phrase('help') }}</a></li>
+						</xf:if>
+
+						<xf:if is="$xf.homePageUrl">
+							<li><a href="{$xf.homePageUrl}">{{ phrase('home') }}</a></li>
+						</xf:if>
+
+						<li><a href="#top" title="{{ phrase('top') }}" data-xf-click="scroll-to"><i class="fa fa-arrow-up" aria-hidden="true"></i></a></li>
+
+						<li><a href="{{ link('forums/index.rss', '-') }}" target="_blank" class="p-footer-rssLink" title="{{ phrase('rss')|for_attr }}"><span aria-hidden="true"><i class="fa fa-rss"></i><span class="u-srOnly">{{ phrase('rss') }}</span></span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="p-footer-copyrightRow">
+			<div class="pageContent">
+				<div class="uix_copyrightBlock">
+					<xf:if contentcheck="true">
+						<div class="p-footer-copyright">
+							<xf:contentcheck>
+								<xf:copyright />
+								<xf:callback class="ThemeHouse\Core\Branding" method="renderStyleBranding" /><xf:set var="$thBrandingDisplayed" value="1" />
+								{{ phrase('extra_copyright') }}
+							</xf:contentcheck>
+						</div>
+					</xf:if>
+
+					<xf:if contentcheck="true">
+						<div class="p-footer-debug">
+							<xf:contentcheck>
+								<xf:macro template="debug_macros" name="debug"
+										  arg-controller="{$controller}"
+										  arg-action="{$actionMethod}"
+										  arg-template="{$template}" />
+							</xf:contentcheck>
+						</div>
+					</xf:if>
+				</div>
+				<xf:comment>
+					<xf:macro name="uix_socialMedia" arg-location="copyright" template="uix_socialMedia" />
+				</xf:comment>
+				<xf:macro name="uix_socialMedia__component" arg-content="{$uix_socialMediaContent}" arg-location="copyright" />
+			</div>
+		</div>
+	</footer>
+</xf:set>
+
+<xf:macro name="uix_footer" arg-insideContent="!" arg-location="!" arg-content="!">
+	<xf:if is="($insideContent && {$location} == 'insideContent') || ($location == 'bottom' && !$insideContent)">
+		{{$content}}
+	</xf:if>
+</xf:macro>
+
+<xf:comment>------ END COMPONENT MARKUP MACROS ---------</xf:comment>
+
+<xf:set var="$thUixFontSize" value="{{ 62.5 * (14 + $xf.visitor.Option.thuix_font_size * 2) / 14 }}" />
+
+<html id="XF" lang="{$xf.language.language_code}" dir="{$xf.language.text_direction}"
+	  style="font-size: {$thUixFontSize}%;"
+	  data-app="public"
+	  data-template="{$template}"
+	  data-container-key="{$containerKey}"
+	  data-content-key="{$contentKey}"
+	  data-logged-in="{{ $xf.visitor.user_id ? 'true' : 'false' }}"
+	  data-cookie-prefix="{$xf.cookie.prefix}"
+	  data-csrf="{{ csrf_token()|escape('js') }}"
+	  class="has-no-js {{ $template ? 'template-' . $template : '' }} {$uix_htmlClasses} {$uix_additionalHtmlClasses}"
+	  {{ $xf.runJobs ? ' data-run-jobs=""' : '' }}>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+		<xf:comment> -- moved to top to use in macros
+			<xf:set var="$siteName" value="{$xf.options.boardTitle}" />
+			<xf:set var="$h1"><xf:h1 fallback="{$siteName}" /></xf:set>
+			<xf:set var="$title"><xf:title formatter="%s | %s" fallback="{$xf.options.boardTitle}" /></xf:set>
+			<xf:set var="$description"><xf:description /></xf:set>
+		</xf:comment>
+
+		<title>{$title}</title>
+
+		<xf:foreach loop="$head" value="$headTag">
+			{$headTag}
+		</xf:foreach>
+
+		<xf:if is="!$head.meta_site_name && $siteName is not empty">
+			<xf:macro template="metadata_macros" name="site_name" arg-siteName="{$siteName}" arg-output="{{ true }}" />
+		</xf:if>
+		<xf:if is="!$head.meta_type">
+			<xf:macro template="metadata_macros" name="type" arg-type="website" arg-output="{{ true }}" />
+		</xf:if>
+		<xf:if is="!$head.meta_title">
+			<xf:macro template="metadata_macros" name="title" arg-title="{{ page_title() ?: $siteName }}" arg-output="{{ true }}" />
+		</xf:if>
+		<xf:if is="!$head.meta_description && $description is not empty && $pageDescriptionMeta">
+			<xf:macro template="metadata_macros" name="description" arg-description="{$description}" arg-output="{{ true }}" />
+		</xf:if>
+		<xf:if is="!$head.meta_share_url">
+			<xf:macro template="metadata_macros" name="share_url" arg-shareUrl="{$xf.fullUri}" arg-output="{{ true }}" />
+		</xf:if>
+		<xf:if is="!$head.meta_image_url && property('publicMetadataLogoUrl')">
+			<xf:macro template="metadata_macros" name="image_url"
+					  arg-imageUrl="{{ base_url(property('publicMetadataLogoUrl'), true) }}"
+					  arg-output="{{ true }}" />
+		</xf:if>
+
+		<xf:if is="property('metaThemeColor')">
+			<meta name="theme-color" content="{{ parse_less_color(property('metaThemeColor')) }}" />
+			<meta name="msapplication-TileColor" content="{{ property('metaThemeColor') }}">
+		</xf:if>
+
+		<xf:macro template="helper_js_global" name="head" arg-app="public" />
+
+		<xf:if is="property('publicFaviconUrl')">
+			<link rel="icon" type="image/png" href="{{ base_url(property('publicFaviconUrl'), true) }}" sizes="32x32" />
+		</xf:if>
+		<xf:if is="property('publicMetadataLogoUrl')">
+			<link rel="apple-touch-icon" href="{{ base_url(property('publicMetadataLogoUrl'), true) }}" />
+		</xf:if>
+		<xf:include template="google_analytics" />
+
+		<xf:set var="$uix_stickyStaffBarHeight" value="0" />
+
+		<xf:if is="property('uix_stickyStaffBar') && ({$uix_responsiveStaffBar} || {$uix_alwaysStaffBar})">
+			<xf:set var="$uix_stickyStaffBarHeight" value="{{property('uix_stickyStaffBarHeight')}}" />
+		</xf:if>
+
+	</head>
+
+	<body data-template="{$template}">
+		<xf:include template="page_style" />
+		<div id="jumpToTop"></div>
+
+		<xf:comment> -- Not currently supporting Sidebar navigation when page style is not covered ---
+			<xf:if is="property('uix_navigationType') == 'sidebarNav' && property('uix_pageStyle') != 'covered'">
+				<xf:macro name="uix_sidebarNav__component" arg-content="{$uix_sidebarNav__component}" />
+			</xf:if>
+		</xf:comment>
+
+		<div class="uix_pageWrapper--fixed">
+			<div class="p-pageWrapper" id="top">
+
+				<div class="uix_headerContainer">
+					<div class="uix_headerContainer--stickyFix"></div>
+					<xf:macro name="uix_staffbar__component" arg-content="{$uix_staffbar__component}" />
+
+					<xf:set var="$uix_headerContent">
+						<xf:if contentcheck="true">
+							<div class="p-header-content">
+								<xf:contentcheck>
+									<xf:if is="property('uix_viewportShowLogoBlock') != '0'">
+										<xf:macro name="uix_logo__component" arg-content="{$uix_logo__component}" />
+									</xf:if>
+
+									<xf:if contentcheck="true">
+										<div class="p-nav-opposite">
+											<xf:contentcheck>
+												<xf:macro name="uix_visitorTabs__component" arg-socialMediaContent="{$uix_socialMediaContent}" arg-whatsNewContent="{$uix_whatsNew__component}" arg-searchContent="{$uix_search__component}" arg-loginTabsContent="{$uix_loginTabs__component}" arg-visitorContent="{$uix_userTabs__component}" arg-location="header" />
+											</xf:contentcheck>
+										</div>
+									</xf:if>
+								</xf:contentcheck>
+							</div>
+						</xf:if>
+					</xf:set>
+
+					<xf:macro name="uix_logoBlock" arg-content="">
+						<xf:if contentcheck="true">
+							<header class="p-header p-header--hasExtraContent" id="header">
+								<div class="p-header-inner">
+									{$content}
+									<xf:contentcheck>
+										<xf:ad position="container_header" />
+									</xf:contentcheck>
+
+								</div>
+							</header>
+							<xf:else />
+							<header class="p-header" id="header">
+								<div class="p-header-inner">
+									{$content}
+								</div>
+							</header>
+						</xf:if>
+					</xf:macro>
+
+					<xf:if is="{{ !property('uix_navAboveHeader') }}">
+						<xf:macro name="uix_logoBlock" arg-content="{$uix_headerContent}" />
+					</xf:if>
+
+					<xf:set var="$navHtml">
+						<nav class="p-nav">
+							<div class="p-nav-inner">
+								<xf:if is="!{$uix_hideNavigation}">
+									<xf:set var="$uix_badgeCounter" value="{{$xf.visitor.conversations_unread + $xf.visitor.alerts_unread}}" />
+									<xf:if is="{{ property('uix_visitorTabsMobile') == 'canvas' }}">
+										<xf:set var="$uix_visitorTabCanvas" value="1" />
+										<xf:else />
+										<xf:set var="$uix_visitorTabCanvas" value="0" />
+									</xf:if>
+									<a class="p-nav-menuTrigger  badgeContainer{{ ($uix_visitorTabCanvas && ($xf.visitor.alerts_unread || $xf.visitor.conversations_unread)) ? ' badgeContainer--highlighted' : '' }}" data-badge="{$uix_badgeCounter|number}" data-xf-click="off-canvas" data-menu=".js-headerOffCanvasMenu" role="button" tabindex="0">
+										<i aria-hidden="true"></i>
+										<span class="p-nav-menuText">{{ phrase('menu') }}</span>
+									</a>
+									<xf:if is="property('uix_navigationType') == 'sidebarNav' && property('uix_pageStyle') == 'covered'">
+										<a class="p-nav-menuTrigger uix_sidebarNav--trigger" id="uix_sidebarNav--trigger" rel="nofollow">
+											<i aria-hidden="true"></i>
+											<span class="p-nav-menuText">{{ phrase('menu') }}</span>
+										</a>
+									</xf:if>
+								</xf:if>
+
+								<xf:macro name="uix_logo__component" arg-content="{$uix_logo__component}" />
+
+								<xf:if is="!{$uix_hideNavigation}">
+									<xf:if is="property('uix_navigationType') != 'sidebarNav' || property('uix_pageStyle') != 'covered'">
+										<div class="p-nav-scroller hScroller" data-xf-init="h-scroller" data-auto-scroll=".p-navEl.is-selected">
+											<div class="hScroller-scroll">
+												<ul class="p-nav-list js-offCanvasNavSource">
+													<xf:foreach loop="$navTree" key="$navSection" value="$navEntry" i="$i" if="{{ $navSection != $xf.app.defaultNavigationId }}">
+														<li>
+															<xf:macro name="nav_entry"
+																	  arg-navId="{$navSection}"
+																	  arg-nav="{$navEntry}"
+																	  arg-selected="{{ $navSection == $pageSection }}"
+																	  arg-shortcut="{$i}" />
+														</li>
+													</xf:foreach>
+												</ul>
+											</div>
+										</div>
+									</xf:if>
+
+									<xf:if is="property('uix_activeNavTitle')">
+										<div class="uix_activeNavTitle">
+											<span>
+												<xf:if is="{$uix_mobileActiveNav}">
+													{{ $uix_mobileActiveNav }}
+													<xf:elseif is="{$selectedNavEntry.href}" />
+													{$selectedNavEntry.title}
+													<xf:else />
+												</xf:if>
+											</span>
+										</div>
+									</xf:if>
+								</xf:if>
+
+								<xf:macro name="uix_search__component" arg-location="navigationLeft" arg-content="{$uix_search__component}" />
+
+								<xf:if contentcheck="true">
+									<div class="p-nav-opposite">
+										<xf:contentcheck>
+											<xf:macro name="uix_visitorTabs__component" arg-socialMediaContent="{$uix_socialMediaContent}" arg-whatsNewContent="{$uix_whatsNew__component}" arg-searchContent="{$uix_search__component}" arg-loginTabsContent="{$uix_loginTabs__component}" arg-visitorContent="{$uix_userTabs__component}" arg-location="navigation" />
+											<xf:macro name="uix_sidebarTrigger__component" arg-content="{$uix_sidebarTrigger__content}" arg-location="navigation" />
+										</xf:contentcheck>
+									</div>
+								</xf:if>
+							</div>
+							<xf:comment>
+							<xf:macro template="uix_megaMenu" name="uix_megaMenu" />
+							</xf:comment>
+						</nav>
+					</xf:set>
+					
+					<xf:set var="$uix_navOffset">
+						[
+							{
+								"breakpoint": "0",
+								"offset": "0"
+							}
+							<xf:if is="{$uix_responsiveStaffBar} && !{$uix_alwaysStaffBar} && {{ property('uix_stickyStaffBar') }}">
+							,{
+								"breakpoint": "{{ property('uix_staffBarBreakpoint')|escape('json') }}",
+								"offset": "{{property('uix_stickyStaffBarHeight')|escape('json')}}"
+							}	
+							</xf:if>
+							<xf:if is="{$uix_alwaysStaffBar} && {{ property('uix_stickyStaffBar') }}">
+							,{
+								"breakpoint": "0",
+								"offset": "{{property('uix_stickyStaffBarHeight')|escape('json')}}"
+							}	
+							</xf:if>
+						]
+					</xf:set>
+
+					<xf:if is="property('publicNavSticky') == 'primary'">
+						<div class="p-navSticky p-navSticky--primary <xf:if is="property('publicNavSticky') !== 'none'">uix_stickyBar</xf:if>" data-top-offset-breakpoints="{$uix_navOffset|for_attr}">
+							{$navHtml|raw}
+						</div>
+						{$subNavHtml|raw}
+						<xf:elseif is="property('publicNavSticky') == 'all'" />
+						<div class="p-navSticky p-navSticky--all <xf:if is="property('publicNavSticky') !== 'none'">uix_stickyBar</xf:if>" data-top-offset-breakpoints="{$uix_navOffset|for_attr}">
+							{$navHtml|raw}
+							{$subNavHtml|raw}
+						</div>
+						<xf:else />
+						{$navHtml|raw}
+						{$subNavHtml|raw}
+					</xf:if>
+
+					<xf:if is="{{ property('uix_navAboveHeader') }}">
+						<xf:macro name="uix_logoBlock" arg-content="{$uix_headerContent}" />
+					</xf:if>
+
+					<xf:macro name="welcomeSection" template="uix_welcomeSection" arg-location="header" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+					<xf:macro name="uix_topBreadcrumb__component" arg-location="header" arg-content="{$uix_topBreadcrumb__component}" />
+					<xf:macro name="uix_mainTabComponent" arg-location="header" arg-content="{$uix_mainTabComponent}" />
+					<xf:macro name="uix_titlebar__component" arg-location="header" arg-content="{$uix_titlebar__component}" />
+					{{$uix_headerExtra|raw }}
+				</div>
+
+				<xf:comment> --- UI.X off canvas start ---</xf:comment>
+				<div class="offCanvasMenu offCanvasMenu--nav js-headerOffCanvasMenu" data-menu="menu" aria-hidden="true" data-ocm-builder="navigation">
+					<div class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+					<div class="offCanvasMenu-content">
+						<xf:include template="uix_canvasTabs" />
+						<xf:include template="uix_canvasPanels" />
+
+						<xf:macro name="canvasNavPanel">
+							<div class="offCanvasMenu-header">
+								{{ phrase('menu') }}
+								<a class="offCanvasMenu-closer" data-menu-close="true" role="button" tabindex="0" aria-label="{{ phrase('close')|for_attr }}"></a>
+							</div>
+							<xf:if is="$xf.visitor.user_id">
+								<div class="p-offCanvasAccountLink">
+									<a href="{{ link('account') }}" class="offCanvasMenu-link">
+										<xf:avatar user="$xf.visitor" size="xxs" href="" />
+										{$xf.visitor.username}
+									</a>
+									<hr class="offCanvasMenu-separator" />
+								</div>
+							</xf:if>
+							<div class="js-offCanvasNavTarget"></div>
+							<xf:if is="$xf.visitor.user_id">
+								<div class="offCanvasMenu-linkHolder u-ripple {{$uix_myAccountLinks == 'profile' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="profile" href="{{ link('members', $xf.visitor) }}" class="offCanvasMenu-link">{{ phrase('th_profile_uix') }}</a></div></div>
+								<div class="offCanvasMenu-linkHolder u-ripple {{$uix_myAccountLinks == 'alerts' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="alerts" href="{{ link('account/alerts') }}" class="offCanvasMenu-link">{{ phrase('alerts')}}</a></div></div>
+								<div class="offCanvasMenu-linkHolder u-ripple {{$uix_myAccountLinks == 'settings' ? 'is-selected' : ''}}"><div class="p-navEl__inner"><a data-nav-id="settings" href="{{ link('account/preferences') }}" class="offCanvasMenu-link">{{ phrase('settings')}}</a></div></div>
+							</xf:if>
+							<xf:if contentcheck="true">
+								<div class="uix_sidebarNav__inner__widgets">
+									<xf:contentcheck>
+										{$uix_sidebarNavWidgets|raw}
+									</xf:contentcheck>
+								</div>
+							</xf:if>
+						</xf:macro>
+					</div>
+				</div>
+
+				<xf:comment>
+					<div class="offCanvasMenu offCanvasMenu--nav js-headerOffCanvasMenu" data-menu="menu" aria-hidden="true" data-ocm-builder="navigation">
+						<div class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+						<div class="offCanvasMenu-content">
+							<div class="offCanvasMenu-header">
+								{{ phrase('menu') }}
+								<a class="offCanvasMenu-closer" data-menu-close="true" role="button" tabindex="0" aria-label="{{ phrase('close')|for_attr }}"></a>
+							</div>
+							<xf:if is="$xf.visitor.user_id">
+								<div class="p-offCanvasAccountLink">
+									<div class="offCanvasMenu-linkHolder">
+										<a href="{{ link('account') }}" class="offCanvasMenu-link">
+											<xf:avatar user="$xf.visitor" size="xxs" href="" />
+											{$xf.visitor.username}
+										</a>
+									</div>
+									<hr class="offCanvasMenu-separator" />
+								</div>
+								<xf:else />
+								<div class="p-offCanvasRegisterLink">
+									<div class="offCanvasMenu-linkHolder">
+										<a href="{{ link('login') }}" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+											{{ phrase('log_in') }}
+										</a>
+									</div>
+									<hr class="offCanvasMenu-separator" />
+									<xf:if is="$xf.options.registrationSetup.enabled">
+										<div class="offCanvasMenu-linkHolder">
+											<a href="{{ link('register') }}" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+												{{ phrase('register') }}
+											</a>
+										</div>
+										<hr class="offCanvasMenu-separator" />
+									</xf:if>
+								</div>
+							</xf:if>
+							<div class="js-offCanvasNavTarget"></div>
+						</div>
+					</div>
+				</xf:comment>
+
+				<xf:macro name="uix_titlebar__component" arg-location="belowHeader" arg-content="{$uix_titlebar__component}" />
+
+				<div class="p-body">
+
+					<xf:if is="property('uix_navigationType') == 'sidebarNav' && property('uix_pageStyle') == 'covered'">
+						<xf:macro name="uix_sidebarNav__component" arg-content="{$uix_sidebarNav__component}" />
+					</xf:if>
+
+					<div class="p-body-inner {{ $removePageWrapper ? 'p-body-inner-none' : ''}}">
+						<xf:if is="!is_addon_active('ThemeHouse/UIX') && $xf.visitor.is_admin">
+							<div class="blockMessage blockMessage--error blockMessage--errorUixAddon">
+								<h2 style="margin: 0 0 .5em 0">UI.X Error</h2>
+								<p>
+									It appears that you do not have the UI.X Add-on installed. Please install this add-on to ensure your style works as expected. You can download the UI.X add-on <a href="https://www.themehouse.com/xenforo/2/addons/uix-addon">here</a>.
+								</p>
+								<xf:button href="https://www.themehouse.com/help/documentation/uix2" class="button--primary">
+									<xf:fa icon="fa-exclamation-triangle" class="uix_icon uix_icon--warning" /> View Documentation
+								</xf:button>
+							</div>
+						</xf:if>
+						<!--XF:EXTRA_OUTPUT-->
+
+						<xf:macro name="uix_notices" arg-location="aboveMainContainer" arg-content="{$uix_notices}" />
+
+						<xf:macro name="uix_titlebar__component" arg-location="aboveMainContainer" arg-content="{$uix_titlebar__component}" />
+
+						<xf:macro name="welcomeSection" template="uix_welcomeSection" arg-location="aboveMainContainer" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+
+						<xf:macro name="uix_topBreadcrumb__component" arg-location="aboveMainContainer" arg-content="{$uix_topBreadcrumb__component}" />
+
+						<xf:macro name="uix_mainTabComponent" arg-location="aboveMainContainer" arg-content="{$uix_mainTabComponent}" />
+
+						<xf:macro template="browser_warning_macros" name="javascript" />
+						<xf:macro template="browser_warning_macros" name="browser" />
+
+						<div uix_component="MainContainer" class="uix_contentWrapper">
+
+							<xf:macro name="uix_notices" arg-location="mainContainerTop" arg-content="{$uix_notices}" />
+
+							<xf:ad position="container_content_above" />
+							<xf:macro name="uix_topBreadcrumb__component" arg-location="mainContainerTop" arg-content="{$uix_topBreadcrumb__component}" />
+							<xf:macro name="welcomeSection" arg-contentTemplate="{$template}" template="uix_welcomeSection" arg-location="mainContainerTop" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+							<xf:macro name="uix_titlebar__component" arg-location="mainContainerTop" arg-content="{$uix_titlebar__component}" />
+							<xf:macro name="uix_mainTabComponent" arg-location="mainContainerTop" arg-content="{$uix_mainTabComponent}" />
+
+							<div class="p-body-main {{ $sidebar ? 'p-body-main--withSidebar' : '' }} {{ $sideNav ? 'p-body-main--withSideNav' : '' }}">
+
+								<xf:if is="$sideNav">
+									<div class="p-body-sideNav">
+										<div class="p-body-sideNavTrigger">
+											<xf:button class="button--link" data-xf-click="off-canvas" data-menu="#js-SideNavOcm">
+												{{ $sideNavTitle ?: phrase('navigation') }}
+											</xf:button>
+										</div>
+										<div class="p-body-sideNavInner {{ (property('uix_stickySidebar') == 'top') ? ' uix_stickyBodyElement' : '' }}" data-ocm-class="offCanvasMenu offCanvasMenu--blocks" id="js-SideNavOcm" data-ocm-builder="sideNav">
+											<div class="uix_sidebar--scroller">
+												<div data-ocm-class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+												<div data-ocm-class="offCanvasMenu-content">
+													<div class="p-body-sideNavContent">
+														<xf:ad position="container_sidenav_above" />
+														<xf:foreach loop="$sideNav" value="$sideNavHtml">
+															{$sideNavHtml}
+														</xf:foreach>
+														<xf:ad position="container_sidenav_below" />
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</xf:if>
+
+								<xf:macro name="uix_sidebar__component" arg-content="{$uix_sidebar__component}" arg-location="left" />
+								<div uix_component="MainContent" class="p-body-content">
+									<!-- ABOVE MAIN CONTENT -->
+									<xf:macro name="uix_notices" arg-location="aboveMainContent" arg-content="{$uix_notices}" />
+									<xf:macro name="uix_topBreadcrumb__component" arg-location="aboveMainContent" arg-content="{$uix_topBreadcrumb__component}" />
+									<xf:macro name="welcomeSection" template="uix_welcomeSection" arg-location="aboveMainContent" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+									<xf:macro name="uix_titlebar__component" arg-location="aboveMainContent" arg-content="{$uix_titlebar__component}" />
+									<xf:macro name="uix_mainTabComponent" arg-location="aboveMainContent" arg-content="{$uix_mainTabComponent}" />
+									<div class="p-body-pageContent">
+										<xf:macro name="uix_notices" arg-location="mainContentTop" arg-content="{$uix_notices}" />
+										<xf:macro name="welcomeSection" template="uix_welcomeSection" arg-location="mainContentTop" arg-showWelcomeSection="{$uix_showWelcomeSection}" />
+										<xf:macro name="uix_topBreadcrumb__component" arg-location="mainContentTop" arg-content="{$uix_topBreadcrumb__component}" />
+										<xf:macro name="uix_titlebar__component" arg-location="mainContentTop" arg-content="{$uix_titlebar__component}" />
+										<xf:macro name="uix_mainTabComponent" arg-location="mainContentTop" arg-content="{$uix_mainTabComponent}" />
+										{$content|raw}
+										<xf:macro name="uix_bottomBreadcrumb__component" arg-content="{$uix_bottomBreadcrumb__component}" arg-location="mainContentBottom" />
+									</div>
+									<!-- BELOW MAIN CONTENT -->
+									<xf:ad position="container_content_below" />
+									<xf:macro name="uix_bottomBreadcrumb__component" arg-content="{$uix_bottomBreadcrumb__component}" arg-location="belowMainContent" />
+								</div>
+
+								<xf:macro name="uix_sidebar__component" arg-content="{$uix_sidebar__component}" arg-location="right" />
+							</div>
+							<xf:macro name="uix_bottomBreadcrumb__component" arg-content="{$uix_bottomBreadcrumb__component}" arg-location="mainContainerBottom" />
+						</div>
+						<xf:macro name="uix_bottomBreadcrumb__component" arg-content="{$uix_bottomBreadcrumb__component}" arg-location="belowMainContainer" />
+						<xf:macro name="uix_footer" arg-location="insideContent" arg-content="{$uix_footer}" arg-insideContent="{{ property('uix_footerInsideContent')}}" />
+					</div>
+				</div>
+
+				<xf:macro name="uix_footer" arg-location="bottom" arg-content="{$uix_footer}" arg-insideContent="{{ property('uix_footerInsideContent')}}" />
+
+				<xf:if contentcheck="true">
+					<div class="uix_fabBar uix_fabBar--active">
+						<xf:contentcheck>
+							<xf:if is="property('scrollJumpButtons')">
+								<div class="u-scrollButtons js-scrollButtons" data-trigger-type="{{ property('scrollJumpButtons') }}">
+									<xf:button href="#top" class="button--scroll ripple-JsOnly" data-xf-click="scroll-to"><xf:fa icon="fa-arrow-up" /><span class="u-srOnly">{{ phrase('top') }}</span></xf:button>
+									<xf:if is="property('scrollJumpButtons') != 'up'">
+										<xf:button href="#footer" class="button--scroll ripple-JsOnly" data-xf-click="scroll-to"><xf:fa icon="fa-arrow-down" /><span class="u-srOnly">{{ phrase('bottom') }}</span></xf:button>
+									</xf:if>
+								</div>
+							</xf:if>
+							<xf:if is="property('uix_fab') != 'never'">
+								<xf:if contentcheck="true">
+									<div class="p-title-pageAction"><xf:contentcheck><xf:pageaction /></xf:contentcheck></div>
+								</xf:if>
+							</xf:if>
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+				<xf:if is="(property('uix_fab') != 'never') && !property('uix_fabScroll')">
+					<xf:if contentcheck="true">
+						<div class="uix_fabBar uix_fabBar--mirror">
+							<div class="p-title-pageAction"><xf:contentcheck><xf:pageaction /></xf:contentcheck></div>
+						</div>
+					</xf:if>
+				</xf:if>
+				<xf:if is="property('uix_visitorTabsMobile') == 'tabbar'">
+					<xf:macro name="uix_tabBar" template="uix_tabBar" />
+				</xf:if>
+			</div>
+		</div>
+
+		<div class="u-bottomFixer js-bottomFixTarget">
+			<xf:if is="$notices.floating">
+				<xf:macro template="notice_macros" name="notice_list" arg-type="floating" arg-notices="{$notices.floating}" />
+			</xf:if>
+			<xf:if is="$notices.bottom_fixer">
+				<xf:macro template="notice_macros" name="notice_list" arg-type="bottom_fixer" arg-notices="{$notices.bottom_fixer}" />
+			</xf:if>
+		</div>
+
+		<xf:include template="uix_config" />
+
+		<xf:macro template="helper_js_global" name="body" arg-app="public" arg-jsState="{$jsState}" />
+		
+		<xf:if is="count($xf.reactionsActive) > 1">
+			<script type="text/template" id="xfReactTooltipTemplate">
+			<div class="tooltip-content-inner">
+				<div class="reactTooltip">
+					<xf:foreach loop="$xf.reactionsActive" key="$reactionId" value="$reaction">
+						<xf:reaction id="{$reactionId}" tooltip="true" />
+				</xf:foreach>
+				</div>
+				</div>
+			</script>
+		</xf:if>
+
+		<xf:if is="property('uix_loginStyle') == 'slidingPanel'">
+			<div class="uix__loginForm uix__loginForm--login">
+				<div class="uix__loginForm--panel">
+					<xf:include template="login">
+						<xf:set var="$uix_loginPreventAutoFocus" value="1" />
+					</xf:include>
+				</div>
+				<div class="uix__loginForm--mask"></div>
+			</div>
+		</xf:if>
+
+		{$ldJsonHtml|raw}
+
+	</body>
+</html>
+
+<xf:macro name="nav_entry" arg-sidebarNav="" arg-navId="!" arg-nav="!" arg-selected="{{ false }}" arg-shortcut="">
+	<div class="p-navEl u-ripple {{ $selected ? 'is-selected' : '' }}" {{ $nav.children ? 'data-has-children="true"' : '' }}>
+		<xf:if is="$sidebarNav">
+			<div class="p-navEl__inner">
+				</xf:if>
+			<xf:if is="$nav.href">
+				<xf:macro name="nav_link"
+						  arg-navId="{$navId}"
+						  arg-nav="{$nav}"
+						  arg-class="p-navEl-link {{ $nav.children ? 'p-navEl-link--splitMenu' : '' }}"
+						  arg-shortcut="{{ $nav.children ? false : $shortcut }}" />
+				<xf:if is="$nav.children">
+					<a data-xf-key="{$shortcut}"
+					   data-xf-click="menu"
+					   data-menu-pos-ref="< .p-navEl"
+					   class="p-navEl-splitTrigger"
+					   role="button"
+					   tabindex="0"
+					   aria-label="{{ phrase('toggle_expanded')|for_attr }}"
+					   aria-expanded="false"
+					   aria-haspopup="true">
+					</a>
+				</xf:if>
+				<xf:elseif is="$nav.children" />
+				<a data-xf-key="{$shortcut}"
+				   class="p-navEl-linkHolder"
+				   data-menu-pos-ref="< .p-navEl"
+				   data-xf-click="menu"
+				   role="button"
+				   tabindex="0"
+				   aria-expanded="false"
+				   aria-haspopup="true">
+					<xf:macro name="nav_link"
+							  arg-navId="{$navId}"
+							  arg-nav="{$nav}"
+							  arg-class="p-navEl-link p-navEl-link--menuTrigger" />
+				</a>
+				<xf:else />
+				<xf:macro name="nav_link"
+						  arg-navId="{$navId}"
+						  arg-nav="{$nav}"
+						  arg-class="p-navEl-link"
+						  arg-shortcut="{$shortcut}" />
+			</xf:if>
+			<xf:if is="$nav.children">
+				<xf:if is="!{$sidebarNav}">
+					<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+						<div class="menu-content">
+							<xf:foreach loop="$nav.children" key="$childNavId" value="$child">
+								<xf:macro name="nav_menu_entry"
+										  arg-navId="{$childNavId}"
+										  arg-nav="{$child}" />
+							</xf:foreach>
+						</div>
+					</div>
+				</xf:if>
+			</xf:if>
+			<xf:if is="{$sidebarNav} && $nav.children && property('uix_tablinksInSideNav')">
+				<a class="uix_sidebarNav--trigger <xf:if is="!property('uix_sideNavCollapsed') && $selected">is-expanded</xf:if>" rel="nofollow"><xf:fa icon="fa-chevron-down" class="uix_icon uix_icon--chevron-down" /></a>
+			</xf:if>
+			<xf:if is="$sidebarNav">
+				</div>
+		</xf:if>
+		<xf:if is="property('uix_tablinksInSideNav')">
+			<xf:if is="{$sidebarNav}">
+				<div <xf:if is="$nav.children">data-menu="false"</xf:if> class="uix_sidebarNav__subNav <xf:if is="!property('uix_sideNavCollapsed') && $selected">subNav--expand</xf:if>">
+			<div class="uix_sidebarNav__subNavInner">
+				<xf:foreach loop="$nav.children" key="$childNavId" value="$child">
+					<xf:macro name="nav_menu_entry"
+							  arg-navId="{$childNavId}"
+							  arg-nav="{$child}" />
+				</xf:foreach>
+			</div>
+			</div>
+		</xf:if>
+	</xf:if>
+</div>
+</xf:macro>
+
+<xf:macro name="nav_link" arg-navId="!" arg-nav="!" arg-class="" arg-titleHtml="" arg-shortcut="{{ false }}">
+	<xf:set var="$tag" value="{{ $nav.href ? 'a' : 'span' }}" />
+	<{$tag} {{ $nav.href ? 'href="' . $nav.href . '"' : '' }}
+			class="{$class} {$nav.attributes.class}"
+			{{ attributes($nav.attributes, ['class']) }}
+			{{ $shortcut !== false ? 'data-xf-key="' . $shortcut . '"' : '' }}
+			data-nav-id="{$navId}"><xf:if is="$nav.icon"><xf:fa icon="{$nav.icon}" /> </xf:if><span>{{ $titleHtml ? $titleHtml|raw : $nav.title }}</span><xf:if is="$nav.counter"> <span class="badge badge--highlighted">{$nav.counter|number}</span></xf:if></{$tag}>
+</xf:macro>
+
+<xf:macro name="nav_menu_entry" arg-navId="!" arg-nav="!" arg-depth="0">
+	<xf:macro name="nav_link"
+			  arg-navId="{$navId}"
+			  arg-nav="{$nav}"
+			  arg-class="menu-linkRow u-indentDepth{$depth} js-offCanvasCopy" />
+	<xf:if is="$nav.children">
+		<xf:foreach loop="$nav.children" key="$childNavId" value="$child">
+			<xf:macro name="nav_menu_entry"
+					  arg-navId="{$childNavId}"
+					  arg-nav="{$child}"
+					  arg-depth="{{ $depth + 1 }}" />
+		</xf:foreach>
+		<xf:if is="$depth == 0">
+			<hr class="menu-separator" />
+		</xf:if>
+	</xf:if>
+</xf:macro>]]></template>
+    <template title="app_header.less" type="public" addon_id="XF" version_id="2010670" version_string="2.1.6"><![CDATA[// MAIN HEADER ROW
+
+.p-header
+{
+	.xf-publicHeader();
+	<xf:if is="property('uix_pageStyle') == 'fixed'">
+		.m-pageWidth();
+	</xf:if>
+
+	.p-header-logo img {max-width: @xf-uix_logoWidth;}
+
+	a
+	{
+		color: inherit;
+	}
+	
+	.p-header-logo img {width: 100%;}
+}
+
+.p-header-inner
+{
+	.m-pageInset();
+	<xf:if is="property('uix_pageStyle') != 'fixed'">
+		.m-pageWidth();
+	</xf:if>
+	position: relative;
+}
+
+.p-header-content
+{
+	// padding: @xf-paddingMedium 0;
+
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	max-width: 100%;
+	
+	<xf:if is="property('uix_viewportCenterLogo') == '100%'">
+		justify-content: center;
+		flex-direction: column;
+		
+		.p-nav-opposite {margin-top: @xf-paddingLarge; margin-left: 0;}
+		.p-header-logo {margin-right: 0;}
+	</xf:if>
+	
+	@media (max-width: @xf-uix_viewportCenterLogo) {
+		justify-content: center;
+		flex-direction: column;
+		
+		.p-nav-opposite {margin-top: @xf-paddingLarge; margin-left: 0;}
+		.p-header-logo {margin-right: 0;}
+	}
+}
+
+.p-header-logo
+{
+	vertical-align: middle;
+	// margin-right: auto;
+
+	a
+	{
+		color: inherit;
+		text-decoration: none;
+	}
+
+	&.p-header-logo--text
+	{
+		font-size: @xf-fontSizeLargest;
+	}
+
+	&.p-header-logo--image
+	{
+		img
+		{
+			// vertical-align: bottom;
+			// max-width: 100%;
+			// max-height: 200px;
+		}
+	}
+
+	.uix_logoIcon {.xf-uix_logoIconStyle();}
+}
+
+
+@media (max-width: @xf-responsiveNarrow)
+{
+	.p-header-logo
+	{
+		// max-width: 100px;
+
+		&.p-header-logo--text
+		{
+			font-size: @xf-fontSizeLarge;
+			font-weight: @xf-fontWeightNormal;
+			.m-overflowEllipsis();
+		}
+	}
+
+	.p-navgroup-link
+	{
+		.p-navGroup--member &
+		{
+			margin-left: 5px;
+
+			&:first-of-type
+			{
+				margin-left: 0;
+			}
+		}
+
+	}
+}]]></template>
+    <template title="core_button.less" type="public" addon_id="XF" version_id="2010871" version_string="2.1.8 Patch 1"><![CDATA[// ############################ BUTTONS #################
+
+.button,
+a.button // needed for specificity over a:link
+{
+	.m-buttonBase();
+
+	.button-text {display: inline-flex; align-items: center;}
+
+	a
+	{
+		color: inherit;
+		text-decoration: none;
+	}
+
+	&:hover,
+	&:focus {
+		.xf-uix_buttonHover();
+	}
+
+	&:active {
+		.xf-uix_buttonActive();
+	}
+
+	.xf-buttonDefault();
+	// .m-buttonBlockColorVariationSimple(xf-default(@xf-buttonDefault--background-color, transparent));
+
+	&.button--primary
+	{
+		.xf-buttonPrimary();
+		.m-buttonBlockColorVariationSimple(xf-default(@xf-buttonPrimary--background-color, transparent));
+
+		&:hover,
+		&:focus {.xf-uix_buttonPrimaryHover();}
+
+		&:active {.xf-uix_buttonPrimaryActive();}
+	}
+
+	&.button--cta
+	{
+		.xf-buttonCta();
+		.m-buttonBlockColorVariationSimple(xf-default(@xf-buttonCta--background-color, transparent));
+
+		&:hover,
+		&:focus {.xf-uix_buttonCtaHover();}
+
+		&:active {.xf-uix_buttonCtaActive();}
+	}
+
+	&.button--link
+	{
+		// block colors
+		// background: @xf-contentBg;
+		// color: @xf-linkColor;
+		// .m-buttonBorderColorVariation(@xf-borderColor);
+		.xf-uix_buttonSmall();
+		.xf-uix_buttonLink();
+
+		&:hover,
+		&:focus
+		{
+			text-decoration: none;
+			// background: @xf-contentHighlightBg;
+			.xf-uix_buttonHover();
+		}
+
+		&:active {
+			.xf-uix_buttonActive();
+		}
+	}
+	&.button--plain
+	{
+		background: none;
+		color: @xf-linkColor;
+		border: none;
+
+		&:hover,
+		&:active,
+		&:focus
+		{
+			text-decoration: none;
+			background: none;
+		}
+	}
+
+	&.button--alt
+	{
+		// block colors
+		background-color: @xf-contentHighlightBg;
+		color: @xf-linkColor;
+		.m-buttonBorderColorVariation(@xf-paletteColor2);
+
+		&:hover,
+		&:active,
+		&:focus
+		{
+			background-color: @xf-paletteColor1;
+			color: @xf-linkColor;
+		}
+	}
+
+	&.button--longText
+	{
+		.m-overflowEllipsis();
+		max-width: 100%;
+		display: inline-block;
+	}
+
+	&.is-disabled
+	{
+		.xf-buttonDisabled();
+		// .m-buttonBorderColorVariation(xf-default(@xf-buttonDisabled--background-color, transparent));
+
+		&:hover,
+		&:active,
+		&:focus
+		{
+			.xf-buttonDisabled();
+			// background: xf-default(@xf-buttonDisabled--background-color, transparent) !important;
+		}
+	}
+
+	&.button--scroll
+	{
+		// background: fade(xf-default(@xf-buttonDefault--background-color, transparent), 75%);
+		.xf-buttonPrimary();
+		padding: 5px 8px;
+		.m-dropShadow();
+
+		&:hover,
+		&:focus {.xf-uix_buttonPrimaryHover();}
+
+		&:active {.xf-uix_buttonPrimaryActive();}
+	}
+
+	&.button--normal
+	{
+		font-size: @xf-fontSizeNormal;
+	}
+
+	&.button--small
+	{
+		font-size: @xf-fontSizeSmall;
+		padding: 3px 6px;
+		.xf-uix_buttonSmall();
+	}
+
+	&.button--smaller
+	{
+		font-size: @xf-fontSizeSmaller;
+		padding: 2px 5px;
+	}
+
+	&.button--fullWidth
+	{
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	&.button--wrap
+	{
+		white-space: normal;
+	}
+
+	&.button--icon
+	{
+		> .button-text:before,
+		.button-icon
+		{
+			.m-faBase();
+		}
+
+		> .button-text:before,
+		> .fa--xf:before,
+		.button-icon
+		{
+			// font-size: 120%;
+			font-size: @xf-uix_iconSize;
+			vertical-align: -.1em;
+			display: inline-block;
+			// margin: -.255em 6px -.255em 0;
+			margin-right: .2em;
+			// content: '';
+		}
+
+		> .fa--xf
+		{
+			// helps fix a button alignment issue (Chrome only)
+			line-height: inherit;
+		}
+
+		/*
+		> .button-text:before
+		{
+		.m-faBase();
+		// font-size: 120%;
+		font-size: @xf-uix_iconSize;
+		vertical-align: middle;
+		display: inline-block;
+		// margin: -.255em 6px -.255em 0;
+		margin-right: .2em;
+	}
+		*/
+
+		.button-icon
+		{
+			height: 1em;
+			vertical-align: 0;
+		}
+
+		&.button--iconOnly
+		{
+			> .button-text:before,
+			> i.fa--xf:before,
+			.button-icon
+			{
+				margin-left: 0;
+				margin-right: 0;
+			}
+		}
+
+		&.button--padded
+		{
+			> .button-text:before,
+			> i.fa--xf:before,
+			.button-icon
+			{
+				margin-top: 0;
+				margin-bottom: 0;
+			}
+		}
+
+		&--add { 
+			.m-buttonIcon(@fa-var-plus-square, 0.79em);  // fa-plus-square
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="plus" />}
+		}
+		&--import { 
+			.m-buttonIcon(@fa-var-upload, 0.93em); // fa-upload
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="import" /> } 
+		}
+		&--export, &--download { 
+			.m-buttonIcon(@fa-var-download, 1.125em); // fa-download
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="export" /> }
+		}
+		&--redirect	    {
+			.m-buttonIcon(@fa-var-external-link, 1.125em);
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="link" />}
+		}
+		&--edit	{ 
+			.m-buttonIcon(@fa-var-pencil, 1.13em); // fa-pencil
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="edit" />} 
+		}
+		&--save	{ 
+			.m-buttonIcon(@fa-var-save, 0.86em); // fa-floppy-o
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="save" /> }
+		}
+		&--delete { 
+			.m-buttonIcon(@fa-var-trash-o, 0.79em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="delete" /> } // fa-trash-o
+		}
+		&--reply { 
+			.m-buttonIcon(@fa-var-mail-reply, 1.13); // fa-reply
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="reply" />} 
+		}
+		&--quote { 
+			.m-buttonIcon(@fa-var-quote-left, 0.93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="quote" />} // fa-quote-left
+		}
+		&--purchase	{ 
+			.m-buttonIcon(@fa-var-shopping-basket, 1.15em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="shopping-cart" />} // fa-shopping-cart
+		}
+		&--payment { 
+			.m-buttonIcon(@fa-var-credit-card, 1.08em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="payment" />} // fa-credit-card
+		}
+		&--convert { 
+			.m-buttonIcon(@fa-var-flash, 0.5em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="convert" />} // fa-bolt
+		}
+		&--search { 
+			.m-buttonIcon(@fa-var-search, 0.93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="search" />} // fa-search
+		}
+		&--sort { 
+			.m-buttonIcon(@fa-var-sort, 0.58em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="sort" /> } // fa-sort
+		}
+		&--upload { 
+			.m-buttonIcon(@fa-var-upload, 0.93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="upload" />} // fa-upload
+		}
+		&--attach { 
+			.m-buttonIcon(@fa-var-paperclip, 0.79em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="attachment" />} // fa-attachment
+		}			
+		&--login { 
+			.m-buttonIcon(@fa-var-lock, 0.65em); 
+			.button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="login" />} // fa-lock
+		}
+		&--rate { 
+			.m-buttonIcon(@fa-var-star, 0.93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="rate" />} // fa-star-half-o
+		}
+		&--config { 
+			.m-buttonIcon(@fa-var-cog, 0.86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="settings" />} // fa-cog
+		}
+		&--refresh { 
+			.m-buttonIcon(@fa-var-refresh, 0.86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="refresh" />}
+		}
+		&--translate { 
+			.m-buttonIcon(@fa-var-globe, .86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="translate" /> }
+		}
+		&--vote { 
+			.m-buttonIcon(@fa-var-check-circle-o, .86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="poll" />}
+		}
+		&--result { 
+			.m-buttonIcon(@fa-var-bar-chart-o, 1.15em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="graph" />}
+		}
+		&--history { 
+			.m-buttonIcon(@fa-var-history, .86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="history" />}
+		}
+		&--cancel  {
+			.m-buttonIcon(@fa-var-ban, .86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="close" /> }
+		}
+		&--preview { 
+			.m-buttonIcon(@fa-var-eye, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="watched" />}
+		}
+		&--conversation { 
+			.m-buttonIcon(@fa-var-comments-o, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="messages" />}
+		}
+		&--write { 
+			.m-buttonIcon(@fa-var-edit, 1em);
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="edit" />}
+		}
+		&--download	{ 
+			.m-buttonIcon(@fa-var-download, .93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="download" />}
+		}
+		&--bolt { 
+			.m-buttonIcon(@fa-var-bolt, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="comment-alert" /> }
+		}
+		&--list	{ 
+			.m-buttonIcon(@fa-var-list, .93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="list" />}
+		}
+		&--confirm { 
+			.m-buttonIcon(@fa-var-check, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="check" />}
+		}
+		&--disable { 
+			.m-buttonIcon(@fa-var-power-off); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="disable" />}
+		}
+		&--markRead { 
+			.m-buttonIcon(@fa-var-check-square-o, .93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="check" />}
+		}
+		&--notificationsOn { 
+			.m-buttonIcon(@fa-var-bell-o, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="alert" />}
+		}
+		&--notificationsOff { 
+			.m-buttonIcon(@fa-var-bell-slash-o, 1.15em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="alert-off" />}
+		}
+		&--merge { 
+			.m-buttonIcon(@fa-var-compress, .86em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="merge" />}
+		}
+		&--move { 
+			.m-buttonIcon(@fa-var-share, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="move" />}
+		}
+		&--copy { 
+			.m-buttonIcon(@fa-var-clone, 1em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="clone" />}
+		}
+		&--approve, &--unapprove { 
+			.m-buttonIcon(@fa-var-shield, .72em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="moderate" />}
+		}
+		&--delete, &--undelete { 
+			.m-buttonIcon(@fa-var-trash-o, .88em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="delete" />}
+		}
+		&--stick, &--unstick { 
+			.m-buttonIcon(@fa-var-thumb-tack, .65em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="sticky" />}
+		}
+		&--lock { 
+			.m-buttonIcon(@fa-var-lock, .88em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="lock" />}
+		}
+		&--unlock { 
+			.m-buttonIcon(@fa-var-unlock, .93em); 
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="unlock" />}
+		}
+		&--bookmark
+		{
+			.m-buttonIcon(@fa-var-bookmark);
+			> .button-text:before {<xf:macro template="uix_icons.less" name="content" arg-icon="bookmark" />}
+
+			&.is-bookmarked .button-text:before
+			{
+				font-weight: @faWeight-solid;
+				color: @xf-textColorAttention;
+			}
+		}		
+	}
+
+	&.button--provider
+	{
+		> .button-text:before,
+		.button-icon
+		{
+			.m-faBase('Brands');
+			font-size: 120%;
+			vertical-align: middle;
+			display: inline-block;
+			margin: -4px 6px -4px 0;
+		}
+
+		.button-icon
+		{
+			height: 1em;
+			vertical-align: 0;
+		}
+
+		&--facebook
+		{
+			.m-buttonColorVariation(#3B5998, white);
+			.m-buttonIcon(@fa-var-facebook, .58em);
+			
+			.button-text {display: inline;}
+		}
+
+		&--twitter
+		{
+			.m-buttonColorVariation(#1DA1F3, white);
+			.m-buttonIcon(@fa-var-twitter, .93em);
+		}
+
+		&--google
+		{
+			.m-buttonColorVariation(white, #444);
+			border-color: #e9e9e9;
+
+			> .button-text:before
+			{
+				display: none;
+			}
+		}
+
+		&--github
+		{
+			.m-buttonColorVariation(#666666, white);
+			.m-buttonIcon(@fa-var-github, .86em);
+		}
+
+		&--linkedin
+		{
+			.m-buttonColorVariation(#0077b5, white);
+			.m-buttonIcon(@fa-var-linkedin, .86em);
+		}
+
+		&--microsoft
+		{
+			.m-buttonColorVariation(#00bcf2, white);
+			.m-buttonIcon(@fa-var-windows, .93em);
+		}
+
+		&--yahoo
+		{
+			.m-buttonColorVariation(#410093, white);
+			.m-buttonIcon(@fa-var-yahoo, .86em);
+		}
+	}
+
+	// button-text and button-menu are always children of button--splitTrigger
+	// but are defined here for reasons of specificity, as these border colors
+	// are overwritten by .m-buttonBorderColorVariation()
+
+	> .button-text { border-right: @xf-borderSize solid transparent; }
+	> .button-menu { border-left: @xf-borderSize solid transparent; }
+
+	&.button--splitTrigger
+	{
+		.m-clearFix();
+		padding: 0;
+		font-size: 0;
+		display: inline-block;
+
+		button.button-text
+		{
+			background: transparent;
+			border: none;
+			border-right: @xf-borderSize solid transparent;
+			color: inherit;
+		}
+
+		> .button-text,
+		> .button-menu
+		{
+			.xf-buttonBase();
+			display: inline-block;
+
+			&:hover
+			{
+				&:after
+				{
+					opacity: 1;
+				}
+			}
+		}
+
+		> .button-text
+		{
+			.m-borderRightRadius(0);
+		}
+
+		> .button-menu
+		{
+			.m-borderLeftRadius(0);
+			padding-right: xf-default(@xf-buttonBase--padding-right, 0);// * (2/3);
+			padding-left: xf-default(@xf-buttonBase--padding-left, 0);// * (2/3);
+
+			&:after
+			{
+				.m-menuGadget(); // .58em
+				opacity: .5;
+			}
+		}
+	}
+}
+
+.buttonGroup
+{
+	display: inline-block;
+	vertical-align: top;
+	.m-clearFix();
+
+	&.buttonGroup--aligned
+	{
+		vertical-align: middle;
+	}
+
+	> .button
+	{
+		float: left;
+
+		&:not(:first-child)
+		{
+			border-left: none;
+		}
+
+		&:not(:first-child):not(:last-child)
+		{
+			border-radius: 0;
+		}
+
+		&:first-child:not(:last-child)
+		{
+			.m-borderRightRadius(0);
+		}
+
+		&:last-child:not(:first-child)
+		{
+			.m-borderLeftRadius(0);
+		}
+	}
+
+	> .buttonGroup-buttonWrapper
+	{
+		float: left;
+
+		&:not(:first-child) > .button
+		{
+			border-left: none;
+		}
+
+		&:not(:first-child):not(:last-child) > .button
+		{
+			border-radius: 0;
+		}
+
+		&:first-child:not(:last-child) > .button
+		{
+			.m-borderRightRadius(0);
+		}
+
+		&:last-child:not(:first-child) > .button
+		{
+			.m-borderLeftRadius(0);
+		}
+	}
+}
+
+.toggleButton
+{
+	> input
+	{
+		display: none;
+	}
+
+	> span
+	{
+		.xf-buttonDisabled();
+		.m-buttonBorderColorVariation(xf-default(@xf-buttonDisabled--background-color, transparent));
+	}
+
+	&.toggleButton--small > span
+	{
+		font-size: @xf-fontSizeSmaller;
+		padding: @xf-paddingSmall;
+	}
+
+	> input:checked + span
+	{
+		.xf-buttonDefault();
+		.m-buttonBlockColorVariationSimple(xf-default(@xf-buttonDefault--background-color, transparent));
+	}
+}
+
+.u-scrollButtons
+{
+	position: fixed;
+	bottom: 30px;
+	<xf:if is="property('uix_fab') == 'always'">
+	bottom: 100px;
+	<xf:elseif is="property('uix_fab') == 'mobile'" />
+	@media(max-width: {{ property('uix_fabVw') - 1 }}px ) {
+		bottom: 100px;
+	}
+	</xf:if>
+	<xf:if is="(property('uix_visitorTabsMobile') == 'tabbar') && ( property('uix_fab') != 'never' )">
+	@media (max-width: @xf-responsiveNarrow) {
+		bottom: {{ property('paddingLarge') + 23 + 100 }}px;
+}
+</xf:if>
+right: (@xf-pageEdgeSpacer) / 2;
+.has-hiddenscroll &
+{
+	right: 20px;
+}
+z-index: @zIndex-9;
+.m-transition(opacity; @xf-animationSpeed);
+opacity: 0;
+display: none;
+&.is-transitioning
+{
+	display: flex;
+}
+&.is-active
+{
+	display: flex;
+	opacity: 1;
+}
+.button
+{
+	font-size: 14px;
+	display: flex;
+	height: 24px;
+	line-height: 24px;
+	+ .button
+	{
+		margin-left: @xf-paddingMedium;
+	}
+}
+}
+
+.block-outer-opposite .button {
+	.xf-uix_buttonSmall();
+}]]></template>
+    <template title="intrepid.less" type="public" addon_id="" version_id="0" version_string=""><![CDATA[@media (min-width: @xf-publicNavCollapseWidth) {
+	.p-sectionLinks-list {padding: 0 10px;}
+	.p-staffBar-inner {padding: 0 8px;}
+	.p-breadcrumbs {padding: 0 18px;}	
+}
+
+@media (min-width: @xf-responsiveEdgeSpacerRemoval) {
+	.uix_contentWrapper {
+		padding-left: @xf-pageEdgeSpacer;
+		padding-right: @xf-pageEdgeSpacer;
+	}
+}
+
+.p-sectionLinks .p-nav-opposite {
+	margin-right: 15px;
+	
+	.button {
+		.xf-uix_buttonSmall();
+	}
+}
+
+.uix_contentWrapper {
+	padding-bottom: @xf-elementSpacer;
+}
+
+.p-body-inner {
+	padding-top: 40px;
+}
+
+.uix_headerContainer {
+	
+	<xf:if is="property('uix_pageStyle') != 'covered'">
+		.m-pageWidth();
+	</xf:if>
+	
+	<xf:if is="property('uix_pageStyle') == 'fixed'">
+		padding-left: 0;
+		padding-right: 0;
+	</xf:if>
+	
+	.breadcrumb {
+		margin-bottom: calc(-@xf-pageEdgeSpacer * 2) !important;
+		margin-top: 20px;
+	}
+	
+	.p-navSticky.is-sticky .p-sectionLinks,
+	.p-staffBar.is-sticky {
+		border-radius: 0;
+	}
+	
+	<xf:if is="property('uix_pageStyle') == 'covered'">
+		> *, .p-nav, .p-sectionLinks {border-radius: 0;}
+	</xf:if>
+}
+
+<xf:if is="!property('uix_removeTablinks')">
+
+.uix_hasSectionLinks .p-navEl.is-selected:before {
+    content: " ";
+    border: 10px solid transparent;
+    border-bottom-color: @xf-publicSubNav--background-color;
+    position: absolute;
+	bottom: 0;
+    left: 50%;
+    margin-left: -10px;
+}
+
+</xf:if>
+
+.p-body-inner {
+	padding-bottom: 0;
+}
+
+// temporary until fixed in UI.X 
+.p-navEl {max-height: @xf-uix_navigationBarHeight;}
+
+.p-nav-list .p-navEl .p-navEl-splitTrigger {
+	font-size: 18px;
+	padding: 0;
+}
+
+.uix_searchBar .uix_searchBarInner {
+	left: 7.5px;
+	right: 7.5px;
+}
+
+.uix_headerContainer .breadcrumb .pageContent {padding: 0;}
+
+@media (max-width: @xf-responsiveNarrow) {
+	.p-breadcrumbs > li {.xf-buttonPrimary();}
+}
+
+.uix_sidebarTrigger.button {
+	.xf-buttonPrimary();
+	&:hover, &:focus {.xf-uix_buttonPrimaryHover();}
+	&:active {.xf-uix_buttonPrimaryActive();}
+}
+
+.block-outer-opposite .button {
+	font-size: @xf-fontSizeSmallest;
+}
+
+// Third party add-ons
+
+// XPress
+
+.xpress_featuredArticles {
+	.m-pageWidth();
+}]]></template>
+  </templates>
+  <properties>
+    <property property_name="blockFilterBar" group_name="block" title="Block filter bar" description="When the content of a block can be filtered, the controls to do so are styled here" property_type="css" value_type="" depends_on="" value_group="" display_order="20800" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeSmall",
+    "color": "@xf-textColorMuted",
+    "background-color": "@xf-contentHighlightBg"
+}</value>
+    </property>
+    <property property_name="blockFooter" group_name="block" title="Block footer" description="When information needs to be conveyed in a footer element for a block, its style is controlled here" property_type="css" value_type="" depends_on="" value_group="" display_order="21200" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeSmaller",
+    "color": "@xf-textColorDimmed",
+    "border-top-width": "@xf-borderSize",
+    "border-top-color": "@xf-borderColorLight",
+    "extra": "padding-top: @xf-paddingMedium;\npadding-bottom: @xf-paddingMedium;"
+}</value>
+    </property>
+    <property property_name="blockHeader" group_name="block" title="Block header" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20100" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeLarge",
+    "color": "@xf-majorHeadingTextColor",
+    "background-color": "@xf-majorHeadingBg",
+    "border-bottom-width": "1px",
+    "border-bottom-color": "@xf-borderColor"
+}</value>
+    </property>
+    <property property_name="blockMinorHeader" group_name="block" title="Block minor header" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20400" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeLarge",
+    "color": "@xf-minorHeadingTextColor",
+    "background-color": "#eaeaea"
+}</value>
+    </property>
+    <property property_name="blockMinorTabHeaderSelected" group_name="block" title="Block minor tab header - selected tab" description="Selected tabs from block sub-headings" property_type="css" value_type="" depends_on="" value_group="" display_order="20600" css_components="text,background,border_color_simple,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-minorHeadingTextColor",
+    "border-color": "@xf-borderColorFeature"
+}</value>
+    </property>
+    <property property_name="blockTabHeader" group_name="block" title="Block tab header" description="Occasionally, blocks will have multi-part, tab headers, styled with these settings" property_type="css" value_type="" depends_on="" value_group="" display_order="20200" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeNormal",
+    "color": "@xf-blockTabHeaderTextColor",
+    "background-color": "@xf-blockTabHeaderBg",
+    "border-bottom-width": "1px",
+    "border-bottom-color": "@xf-borderColor",
+    "extra": "border-bottom: 1px solid @xf-borderColor;\nfont-weight: @xf-fontWeightHeavy;\ntext-transform: uppercase;\nmargin-bottom: @xf-elementSpacer;"
+}</value>
+    </property>
+    <property property_name="blockTabHeaderBg" group_name="color" title="Block tab header background color" description="" property_type="value" value_type="color" depends_on="" value_group="blockTabHeader" display_order="6500" addon_id="XF">
+      <value>"@xf-contentAltBg"</value>
+    </property>
+    <property property_name="blockTabHeaderSelected" group_name="block" title="Block tab header - selected tab" description="The selected tab in multi-part headers takes additional styling from here" property_type="css" value_type="" depends_on="" value_group="" display_order="20300" css_components="text,background,border_color_simple,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-textColorDimmed",
+    "border-color": "@xf-uix_primaryColorDarker"
+}</value>
+    </property>
+    <property property_name="borderRadiusLarge" group_name="borderSpacing" title="Large border radius" description="" property_type="value" value_type="unit" depends_on="" value_group="borderRadius" display_order="1200" addon_id="XF">
+      <value>"18px"</value>
+    </property>
+    <property property_name="borderRadiusSmall" group_name="borderSpacing" title="Small border radius" description="" property_type="value" value_type="unit" depends_on="" value_group="borderRadius" display_order="1000" addon_id="XF">
+      <value>"4px"</value>
+    </property>
+    <property property_name="buttonBase" group_name="button" title="Button base" description="Defines the styling for the basic elements that are common to all text-based buttons" property_type="css" value_type="" depends_on="" value_group="" display_order="20000" css_components="text,border_radius,padding,extra" addon_id="XF">
+      <value>{
+    "font-size": "14px",
+    "color": "#fff",
+    "border-radius": "@xf-borderRadiusMedium",
+    "padding-top": "0",
+    "padding-right": "10px",
+    "padding-bottom": "0",
+    "padding-left": "10px",
+    "extra": "text-align: center;\noutline: none;\nline-height: 32px;\nheight: 32px;\ntext-decoration: none;\ndisplay: inline-block;\ncursor: pointer;\nbox-sizing: content-box;\n-webkit-appearance: none;\nfont-weight: 400;\ntext-transform: uppercase;\nwill-change: box-shadow;\ntransition: all 0.3s cubic-bezier(.25,.8,.25,1);"
+}</value>
+    </property>
+    <property property_name="buttonBg" group_name="color" title="Default button background color" description="" property_type="value" value_type="color" depends_on="" value_group="buttons" display_order="8200" addon_id="XF">
+      <value>"xf-diminish(@xf-buttonTextColor, 30%)"</value>
+    </property>
+    <property property_name="buttonCta" group_name="button" title="Button - call to action" description="Call to action buttons sit alone and invite the user to do something, like post a new thread" property_type="css" value_type="" depends_on="" value_group="" display_order="20300" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeLarger",
+    "color": "#fff",
+    "font-weight": "@xf-fontWeightLight",
+    "background-color": "@xf-buttonCtaBg",
+    "extra": "padding: 0 10px;\nbox-shadow: @xf-uix_elevation1;\nborder: none;\nborder-radius: 4px;\nfont-family: @xf-uix_headingFont;"
+}</value>
+    </property>
+    <property property_name="buttonCtaBg" group_name="color" title="Call-to-action button background" description="" property_type="value" value_type="color" depends_on="" value_group="buttons" display_order="8400" addon_id="XF">
+      <value>"@xf-uix_primaryColor"</value>
+    </property>
+    <property property_name="buttonDefault" group_name="button" title="Button - default" description="Most buttons use this styling, except for primary form submit buttons" property_type="css" value_type="" depends_on="" value_group="" display_order="20100" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-buttonTextColor",
+    "background-color": "@xf-buttonBg",
+    "extra": "border-radius: 4px;\nborder: none;"
+}</value>
+    </property>
+    <property property_name="buttonPrimary" group_name="button" title="Button - primary" description="These rules are used mostly for the main submit button for forms" property_type="css" value_type="" depends_on="" value_group="" display_order="20200" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "color": "#fff",
+    "background-color": "@xf-buttonPrimaryBg",
+    "extra": "padding: 0 10px;\nbox-shadow: @xf-uix_elevation1;\nborder: none;"
+}</value>
+    </property>
+    <property property_name="buttonTextColor" group_name="color" title="Default button text color" description="" property_type="value" value_type="color" depends_on="" value_group="buttons" display_order="8100" addon_id="XF">
+      <value>"@xf-textColorMuted"</value>
+    </property>
+    <property property_name="fontFamilyBody" group_name="fonts" title="Body Text Font" description="This font is used for the text of messages etc." property_type="value" value_type="string" depends_on="" value_group="font" display_order="200" addon_id="XF">
+      <value>"\"PT Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Oxygen\",      \"Ubuntu\", \"Cantarell\", \"Fira Sans\",      \"Droid Sans\", \"Helvetica Neue\", sans-serif"</value>
+    </property>
+    <property property_name="fontSizeSmaller" group_name="fonts" title="Smaller font size" description="" property_type="value" value_type="unit" depends_on="" value_group="size" display_order="1200" addon_id="XF">
+      <value>"1.1rem"</value>
+    </property>
+    <property property_name="fontSizeSmallest" group_name="fonts" title="Smallest font size" description="" property_type="value" value_type="unit" depends_on="" value_group="size" display_order="1300" addon_id="XF">
+      <value>"1.1rem"</value>
+    </property>
+    <property property_name="fontWeightHeavy" group_name="fonts" title="Heavy font weight" description="" property_type="value" value_type="number" depends_on="" value_group="weight" display_order="2200" addon_id="XF">
+      <value_parameters>step=100
+min=100
+max=900</value_parameters>
+      <value>"700"</value>
+    </property>
+    <property property_name="link" group_name="page" title="Links" description="These are the styling rules for basic hyperlinks throughout the system" property_type="css" value_type="" depends_on="" value_group="" display_order="20000" css_components="text,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-textColorDimmed",
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="linkHover" group_name="page" title="Links - hovered" description="When basic links are hovered, they use this set of rules for their styling" property_type="css" value_type="" depends_on="" value_group="" display_order="20100" css_components="text,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-textColorMuted",
+    "text-decoration": "underline"
+}</value>
+    </property>
+    <property property_name="majorHeadingTextColor" group_name="color" title="Major heading text color" description="" property_type="value" value_type="color" depends_on="" value_group="heading" display_order="6200" addon_id="XF">
+      <value>"@xf-textColorMuted"</value>
+    </property>
+    <property property_name="minorHeadingTextColor" group_name="color" title="Minor heading text color" description="" property_type="value" value_type="color" depends_on="" value_group="heading" display_order="6400" addon_id="XF">
+      <value>"@xf-textColorDimmed"</value>
+    </property>
+    <property property_name="nodeIconUnreadColor" group_name="nodeList" title="Unread node icon color" description="" property_type="value" value_type="color" depends_on="" value_group="" display_order="100" addon_id="XF">
+      <value>"@xf-uix_primaryColor"</value>
+    </property>
+    <property property_name="pageBackground" group_name="page" title="Page background" description="The page background, behind all block elements, uses the styling rules defined here" property_type="css" value_type="" depends_on="" value_group="" display_order="20200" css_components="background,extra" addon_id="XF">
+      <value>{
+    "background-color": "@xf-pageBg",
+    "extra": "background: -webkit-linear-gradient(to bottom, #4562b9, #69a1f4);\nbackground: linear-gradient(to bottom, #4562b9, #69a1f4);\nbackground-attachment: fixed;"
+}</value>
+    </property>
+    <property property_name="pageBg" group_name="color" title="Page background color" description="The background of the page itself, on which all other content rests" property_type="value" value_type="color" depends_on="" value_group="contentBackground" display_order="2100" addon_id="XF">
+      <value>"#5885c1"</value>
+    </property>
+    <property property_name="paletteAccent1" group_name="palette" title="Accent 1" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2000" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#34d7b3"</value>
+    </property>
+    <property property_name="paletteAccent2" group_name="palette" title="Accent 2" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2100" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"rgb(45, 203, 168)"</value>
+    </property>
+    <property property_name="paletteAccent3" group_name="palette" title="Accent 3" description="" property_type="value" value_type="color" depends_on="" value_group="accent" display_order="2200" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#69a1f4"</value>
+    </property>
+    <property property_name="paletteColor2" group_name="palette" title="Color 2" description="" property_type="value" value_type="color" depends_on="" value_group="primary" display_order="1100" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"rgb(250, 250, 250)"</value>
+    </property>
+    <property property_name="paletteColor3" group_name="palette" title="Color 3" description="" property_type="value" value_type="color" depends_on="" value_group="primary" display_order="1200" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"rgb(240, 240, 240)"</value>
+    </property>
+    <property property_name="paletteColor4" group_name="palette" title="Color 4" description="" property_type="value" value_type="color" depends_on="" value_group="primary" display_order="1300" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#656565"</value>
+    </property>
+    <property property_name="paletteColor5" group_name="palette" title="Color 5" description="" property_type="value" value_type="color" depends_on="" value_group="primary" display_order="1400" addon_id="XF">
+      <value_parameters>hidePalette=true</value_parameters>
+      <value>"#292929"</value>
+    </property>
+    <property property_name="publicFooter" group_name="footer" title="Footer" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20000" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeSmall",
+    "color": "@xf-textColor"
+}</value>
+    </property>
+    <property property_name="publicHeader" group_name="headerNav" title="Header/logo row" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20000" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "color": "rgba(255,255,255,.7)",
+    "extra": "padding: 0;"
+}</value>
+    </property>
+    <property property_name="publicLogoUrl" group_name="basic" title="Logo URL" description="" property_type="value" value_type="string" depends_on="" value_group="logo" display_order="100" addon_id="XF">
+      <value>""</value>
+    </property>
+    <property property_name="publicLogoUrl2x" group_name="basic" title="2x logo URL" description="" property_type="value" value_type="string" depends_on="" value_group="logo" display_order="200" addon_id="XF">
+      <value>""</value>
+    </property>
+    <property property_name="publicNav" group_name="headerNav" title="Navigation row" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20100" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "color": "rgba(255,255,255,.7)",
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="publicNavPaddingH" group_name="headerNav" title="Navigation padding horizontal" description="Defines the amount of padding applied horizontally to each main navigational tab in the header" property_type="value" value_type="unit" depends_on="" value_group="navPad" display_order="4100" addon_id="XF">
+      <value>"18px"</value>
+    </property>
+    <property property_name="publicNavPaddingV" group_name="headerNav" title="Navigation padding vertical" description="This value defines the amount of padding applied to the main navigational tabs in the header" property_type="value" value_type="unit" depends_on="" value_group="navPad" display_order="4000" addon_id="XF">
+      <value>"18px"</value>
+    </property>
+    <property property_name="publicNavSelected" group_name="headerNav" title="Navigation row - selected tab" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20300" css_components="text,background,border,border_radius,extra" addon_id="XF">
+      <value>{
+    "color": "#fff",
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="publicNavTab" group_name="headerNav" title="Navigation row - tab" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20200" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "font-size": "20px",
+    "color": "rgba(255,255,255,.7)",
+    "font-weight": "@xf-fontWeightNormal",
+    "text-decoration": "none",
+    "extra": "line-height: 1;\nborder-top-left-radius: @xf-borderRadiusSmall;\nborder-top-right-radius: @xf-borderRadiusSmall;\nfont-family: @xf-uix_headingFont;\nheight: @xf-uix_navigationBarHeight;"
+}</value>
+    </property>
+    <property property_name="publicNavTabHover" group_name="headerNav" title="Navigation row - hovered tab" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20400" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "color": "#fff",
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="publicNavTabMenuOpen" group_name="headerNav" title="Navigation row - menu open" description="Styling applied when the popup menu for the current tab is visible" property_type="css" value_type="" depends_on="" value_group="" display_order="20450" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="publicStaffBar" group_name="headerNav" title="Staff tools bar" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20700" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeSmall",
+    "color": "#fff",
+    "background-color": "shade(@xf-uix_secondaryColor, 7%)",
+    "extra": "border-radius: 4px;"
+}</value>
+    </property>
+    <property property_name="publicSubNav" group_name="headerNav" title="Sub-navigation row" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20500" css_components="text,background,border,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeNormal",
+    "color": "@xf-subNavTextColor",
+    "font-weight": "@xf-fontWeightNormal",
+    "text-decoration": "none",
+    "background-color": "@xf-subNavBg",
+    "border-bottom-width": "0",
+    "border-bottom-color": "@xf-borderColor",
+    "extra": "border-radius:40px;"
+}</value>
+    </property>
+    <property property_name="publicSubNavElHover" group_name="headerNav" title="Sub-navigation row - hovered element" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20600" css_components="text,extra" addon_id="XF">
+      <value>{
+    "color": "#fff",
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="publicSubNavElMenuOpen" group_name="headerNav" title="Sub-navigation row - menu-open element" description="Styles sub-navigation elements whose popup menu is currently open" property_type="css" value_type="" depends_on="" value_group="" display_order="20650" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "text-decoration": "none"
+}</value>
+    </property>
+    <property property_name="sidebarWidth" group_name="page" title="Sidebar and side navigation width" description="" property_type="value" value_type="unit" depends_on="" value_group="sidebar" display_order="1100" addon_id="XF">
+      <value>"250px"</value>
+    </property>
+    <property property_name="standaloneTab" group_name="tab" title="Standalone tabs" description="Tabs that are not part of block headers are styled here" property_type="css" value_type="" depends_on="" value_group="" display_order="20000" css_components="text,background,extra" addon_id="XF">
+      <value>{
+    "font-size": "@xf-fontSizeNormal",
+    "color": "@xf-textColorMuted",
+    "background-color": "@xf-contentHighlightBg",
+    "extra": "border-bottom: 1px solid @xf-borderColor;\nfont-weight: @xf-fontWeightHeavy;\ntext-transform: uppercase;"
+}</value>
+    </property>
+    <property property_name="standaloneTabSelected" group_name="tab" title="Standalone tabs - selected tab" description="The selected tab in groups that are not part of block headers" property_type="css" value_type="" depends_on="" value_group="" display_order="20100" css_components="text,background,border_color_simple,extra" addon_id="XF">
+      <value>{
+    "color": "@xf-textColorMuted",
+    "background-color": "@xf-contentHighlightBg",
+    "border-color": "@xf-uix_primaryColorDarker"
+}</value>
+    </property>
+    <property property_name="subNavBg" group_name="color" title="Page sub-navigation background" description="" property_type="value" value_type="color" depends_on="" value_group="chrome" display_order="6080" addon_id="XF">
+      <value>"shade(@xf-uix_secondaryColor, 7%)"</value>
+    </property>
+    <property property_name="subNavTextColor" group_name="color" title="Page sub-navigation text color" description="" property_type="value" value_type="color" depends_on="" value_group="chrome" display_order="6090" addon_id="XF">
+      <value>"rgba(255,255,255,.7)"</value>
+    </property>
+    <property property_name="uix_additionalCss" group_name="uix_globalSettings" title="List of additional css templates to include" description="A comma separated list of additional CSS/less templates to load. Requires the .css or .less suffix" property_type="value" value_type="string" depends_on="" value_group="" display_order="400" addon_id="">
+      <value>"intrepid.less"</value>
+    </property>
+    <property property_name="uix_borderRadiusJs" group_name="borderSpacing" title="Enable Smart Border Radius Javascript" description="Enables context-aware border-radius rules. Very helpful, especially in the header." property_type="value" value_type="boolean" depends_on="" value_group="uix_smartBorder" display_order="5000" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_bottomBreadcrumbLocation" group_name="uix_breadcrumb" title="Bottom breadcrumb location" description="" property_type="value" value_type="select" depends_on="" value_group="" display_order="200" addon_id="">
+      <value_parameters>belowMainContainer=Below main container
+mainContainerBottom = Bottom of main container
+mainContentBottom=Bottom of main content
+belowMainContent=Below main content</value_parameters>
+      <value>"mainContainerBottom"</value>
+    </property>
+    <property property_name="uix_brandmarkImage__breakpoint" group_name="basic" title="Logo breakpoint" description="Max viewport width to switch to the brandmark image. Use 100% for always, 0 for never, and other values in pixels" property_type="value" value_type="string" depends_on="" value_group="uix_responsiveLogo" display_order="700" addon_id="">
+      <value>"@xf-responsiveWide"</value>
+    </property>
+    <property property_name="uix_breadcrumbItem" group_name="uix_breadcrumb" title="Breadcrumb Item" description="Individual breadcrumb items" property_type="css" value_type="" depends_on="" value_group="" display_order="100" css_components="text,background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,padding,extra" addon_id="">
+      <value>{
+    "color": "@xf-textColorMuted",
+    "font-weight": "@xf-fontWeightHeavy"
+}</value>
+    </property>
+    <property property_name="uix_breadcrumbItem__active" group_name="uix_breadcrumb" title="Breadcrumb Item (Active)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="110" css_components="text,background,extra" addon_id="">
+      <value>{
+    "color": "@xf-uix_primaryColor"
+}</value>
+    </property>
+    <property property_name="uix_breadcrumbStyle" group_name="uix_breadcrumb" title="Breadcrumb Container" description="Styles the breadcrumb container" property_type="css" value_type="" depends_on="" value_group="" display_order="90" css_components="text,background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-contentBg",
+    "padding-right": "10px",
+    "padding-left": "10px",
+    "extra": "border-radius: 100px;\nbox-shadow: @xf-uix_elevation1;"
+}</value>
+    </property>
+    <property property_name="uix_breadcrumbWrapper" group_name="uix_breadcrumb" title="Breadcrumb wrapper" description="container surrounding breadcrumb and page action if applicable" property_type="css" value_type="" depends_on="" value_group="" display_order="80" css_components="background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "extra": "height: 40px;\nline-height: 40px;\nz-index: 1;\nmargin: @xf-elementSpacer 0;"
+}</value>
+    </property>
+    <property property_name="uix_buttonActive" group_name="button" title="Button - default (active)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20120" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "lighten(@xf-buttonDefault--background-color, 5%)"
+}</value>
+    </property>
+    <property property_name="uix_buttonHover" group_name="button" title="Button - default (hover)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20110" css_components="text,background,extra" addon_id="">
+      <value>{
+    "background-color": "xf-diminish(@xf-buttonDefault--background-color, 5%)"
+}</value>
+    </property>
+    <property property_name="uix_buttonPrimaryHover" group_name="button" title="Button primary (hover)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="20210" css_components="text,background,extra" addon_id="">
+      <value>{
+    "background-color": "darken(@xf-buttonPrimary--background-color, 5%)",
+    "extra": "box-shadow: @xf-uix_elevation2;"
+}</value>
+    </property>
+    <property property_name="uix_canvas" group_name="uix_canvas" title="Canvas" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "rgba(255,255,255,.7)",
+    "background-color": "@xf-contentAccentBg"
+}</value>
+    </property>
+    <property property_name="uix_canvasNavItemActive" group_name="uix_canvas" title="Canvas navigation item (active)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "#fff",
+    "background-color": "@xf-uix_primaryColor"
+}</value>
+    </property>
+    <property property_name="uix_canvasNavItemHover" group_name="uix_canvas" title="Canvas navigation item (hover)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "#fff"
+}</value>
+    </property>
+    <property property_name="uix_categoryDescription" group_name="nodeList" title="Category description" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-fontSizeSmaller",
+    "color": "rgba(255, 255, 255, 0.5)",
+    "font-weight": "@xf-fontWeightNormal",
+    "padding-top": "4px"
+}</value>
+    </property>
+    <property property_name="uix_categoryDescriptionDisplay" group_name="nodeList" title="Category description display" description="" property_type="value" value_type="radio" depends_on="" value_group="uix_nodeCategories" display_order="1100" addon_id="">
+      <value_parameters>tooltip=Tooltip
+inline=Inline
+none=None</value_parameters>
+      <value>"none"</value>
+    </property>
+    <property property_name="uix_categoryStrip" group_name="nodeList" title="Category Strip" description="Styles the category strip for nodes" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-fontSizeNormal",
+    "color": "#fff",
+    "font-weight": "@xf-fontWeightHeavy",
+    "background-color": "rgb(100, 100, 100)",
+    "border-radius": "4px",
+    "border-bottom-width": "0",
+    "padding": "@xf-paddingMedium",
+    "extra": "line-height: 1;\nmargin-bottom: 10px;"
+}</value>
+    </property>
+    <property property_name="uix_categoryStripOutsideWrapper" group_name="nodeList" title="Move category strip outside wrapper" description="Moves the category strip outside of the level 1 node container" property_type="value" value_type="boolean" depends_on="" value_group="uix_nodeCategories" display_order="1200" addon_id="">
+      <value>1</value>
+    </property>
+    <property property_name="uix_contentWrapper" group_name="page" title="Content Wrapper" description="Sets where the styling for Content Wrapper will be applied" property_type="value" value_type="select" depends_on="" value_group="page" display_order="300" addon_id="">
+      <value_parameters>0=Default (no wrapper)
+1= Wrapper around main content and sidebar
+2=Wrapper around main content only</value_parameters>
+      <value>"0"</value>
+    </property>
+    <property property_name="uix_contentWrapperStyle" group_name="page" title="Content Wrapper" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,extra" addon_id="">
+      <value>{
+    "background-color": "#f8f8f8",
+    "border-width": "@xf-borderSize",
+    "border-color": "rgba(0, 0, 0, 0.1)"
+}</value>
+    </property>
+    <property property_name="uix_detachedNavigation" group_name="headerNav" title="Separate Header from Content Wrapper" description="Adds margin-bottom to header" property_type="value" value_type="boolean" depends_on="" value_group="" display_order="0" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_elevation1" group_name="uix_globalSettings" title="Elevation 1" description="Sets the box-shadow value for elevation level 1" property_type="value" value_type="string" depends_on="" value_group="elevation" display_order="2000" addon_id="">
+      <value>"0 1px 1px 0 rgba(0,0,0,0.15), 0 1px 1px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.05)"</value>
+    </property>
+    <property property_name="uix_extendedFooterStyle" group_name="footer" title="Extended Footer" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-contentAccentBg",
+    "border-top-width": "0",
+    "border-top-color": "@xf-borderColor",
+    "padding-top": "@xf-paddingLargest * 2",
+    "padding-bottom": "@xf-paddingLargest * 2",
+    "extra": "line-height: 1.7;"
+}</value>
+    </property>
+    <property property_name="uix_footerChooser" group_name="footer" title="Footer chooser" description="Styles the footer chooser (ex. style chooser, width toggle, language chooser)" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,extra" addon_id="">
+      <value>{
+    "background-color": "rgba(255,255,255,.05)"
+}</value>
+    </property>
+    <property property_name="uix_footerChooserHover" group_name="footer" title="Footer chooser hover" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,extra" addon_id="">
+      <value>{
+    "background-color": "rgba(255,255,255,.1)"
+}</value>
+    </property>
+    <property property_name="uix_footerCopyrightRow" group_name="footer" title="Footer copyright row" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "@xf-textColorDimmed",
+    "background-color": "@xf-contentAccentBg",
+    "border-top-width": "1px",
+    "border-top-color": "rgba(255,255,255,.12)",
+    "padding-top": "@xf-paddingLarge",
+    "padding-bottom": "@xf-paddingLarge",
+    "extra": "border-bottom-left-radius: @xf-borderRadiusMedium;\nborder-bottom-right-radius: @xf-borderRadiusMedium;"
+}</value>
+    </property>
+    <property property_name="uix_footerLinkHover" group_name="footer" title="Footer links hover" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,extra" addon_id="">
+      <value>{
+    "color": "#fff",
+    "text-decoration": "none",
+    "extra": "text-decoration: none;"
+}</value>
+    </property>
+    <property property_name="uix_footerMenu" group_name="footer" title="Footer menu" description="Styles the footer menu bar" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-contentAccentBg"
+}</value>
+    </property>
+    <property property_name="uix_footerWidgetFooter" group_name="footer" title="Footer widget footer" description="Styles the footer area of widgets in the footer." property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "none",
+    "border-width": "0",
+    "padding-right": "0",
+    "padding-bottom": "0",
+    "padding-left": "0"
+}</value>
+    </property>
+    <property property_name="uix_googleFonts" group_name="fonts" title="Google Fonts" description="Choose the fonts in which to load from Google Fonts API." property_type="value" value_type="string" depends_on="" value_group="" display_order="0" addon_id="">
+      <value>"Squada+One:400|PT+Sans:400,700"</value>
+    </property>
+    <property property_name="uix_headerWrapper" group_name="headerNav" title="Header wrapper" description="Styles the wrapper around the entire header" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-uix_secondaryColor",
+    "border-top-left-radius": "4px",
+    "border-top-right-radius": "4px",
+    "padding-top": "@xf-pageEdgeSpacer",
+    "padding-bottom": "@xf-pageEdgeSpacer"
+}</value>
+    </property>
+    <property property_name="uix_headingFont" group_name="fonts" title="Secondary font" description="Font family used for headings and other decorative text situations." property_type="value" value_type="string" depends_on="" value_group="font" display_order="210" addon_id="">
+      <value>"\"Squada One\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Oxygen\",      \"Ubuntu\", \"Cantarell\", \"Fira Sans\",      \"Droid Sans\", \"Helvetica Neue\", sans-serif"</value>
+    </property>
+    <property property_name="uix_hideNodeStats" group_name="nodeList" title="Hide node stats" description="" property_type="value" value_type="boolean" depends_on="" value_group="uix_nodeStats" display_order="2400" addon_id="">
+      <value>1</value>
+    </property>
+    <property property_name="uix_homeCrumbIcon" group_name="uix_breadcrumb" title="Home breadcrumb as icon" description="Swaps out the &quot;home&quot; text in the breadcrumb for the home icon" property_type="value" value_type="boolean" depends_on="" value_group="" display_order="70" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_imagePath" group_name="basic" title="Image path" description="Sets the path to images for the theme." property_type="value" value_type="string" depends_on="" value_group="" display_order="10" addon_id="">
+      <value>"styles/intrepid"</value>
+    </property>
+    <property property_name="uix_logoIcon" group_name="basic" title="Logo icon" description="Adds a CSS font icon when logo text is applicable." property_type="value" value_type="string" depends_on="" value_group="uix_logoText" display_order="1200" addon_id="">
+      <value>"mdi mdi-earth"</value>
+    </property>
+    <property property_name="uix_logoIconStyle" group_name="basic" title="Logo icon" description="Styles the logo icon" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "font-size": "50px",
+    "color": "shade(@xf-publicNav--background-color, 20%)",
+    "padding-right": "@xf-paddingMedium"
+}</value>
+    </property>
+    <property property_name="uix_logoSmall" group_name="basic" title="Logo small image path" description="If left blank, will default to main logo path" property_type="value" value_type="string" depends_on="" value_group="uix_responsiveLogo" display_order="600" addon_id="">
+      <value>""</value>
+    </property>
+    <property property_name="uix_logoText" group_name="basic" title="Logo text" description="Adds text in place of a logo. Note: this is overwritten when a logo image path is set" property_type="value" value_type="string" depends_on="" value_group="uix_logoText" display_order="1100" addon_id="">
+      <value>"Intrepid"</value>
+    </property>
+    <property property_name="uix_logoTextBreakpoint" group_name="basic" title="Logo text breakpoint" description="The device width under which the logo text changes font-size." property_type="value" value_type="string" depends_on="" value_group="uix_logoText" display_order="1400" addon_id="">
+      <value>"@xf-responsiveWide"</value>
+    </property>
+    <property property_name="uix_logoText__style" group_name="basic" title="Logo text" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "font-size": "45px",
+    "color": "#fff",
+    "extra": "margin: 0;\nfont-family: @xf-uix_headingFont;"
+}</value>
+    </property>
+    <property property_name="uix_navLogoText__style" group_name="basic" title="Navigation logo text" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "#fff",
+    "extra": "font-family: @xf-uix_headingFont;"
+}</value>
+    </property>
+    <property property_name="uix_navTabIconStyle" group_name="headerNav" title="Nav tab icon style" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-uix_iconSize !important",
+    "padding-right": "@xf-paddingSmall"
+}</value>
+    </property>
+    <property property_name="uix_navTabIcons" group_name="headerNav" title="Navigation tab icons" description="" property_type="value" value_type="boolean" depends_on="" value_group="navigation" display_order="1700" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_navigationBarHeight" group_name="headerNav" title="Navigation bar height" description="Sets the height of the primary navigation bar. (Note: this gets overwritten by sticky nav bar height when applicable. If unset, the navigation bar height will simply be as large as the largest component inside of it.)" property_type="value" value_type="unit" depends_on="" value_group="navigation" display_order="1500" addon_id="">
+      <value>"60px"</value>
+    </property>
+    <property property_name="uix_newNodeMarkerStyle" group_name="nodeList" title="New node indicator" description="Styles the new node indicator if enabled" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "font-size": "12px",
+    "color": "#fff",
+    "background-color": "@xf-uix_primaryColor",
+    "border-radius": "@xf-borderRadiusSmall",
+    "padding-top": "1px",
+    "padding-right": "4px",
+    "padding-bottom": "1px",
+    "padding-left": "4px"
+}</value>
+    </property>
+    <property property_name="uix_nodeBlockBody" group_name="nodeList" title="Block Body (for nodes)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "border-radius": "@xf-borderRadiusSmall"
+}</value>
+    </property>
+    <property property_name="uix_nodeBody" group_name="nodeList" title="Node body" description="Styles the individual node body" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-contentBg",
+    "extra": "box-shadow: @xf-uix_elevation1;"
+}</value>
+    </property>
+    <property property_name="uix_nodeClickable" group_name="nodeList" title="Clickable nodes" description="Makes the entire node a clickable link to the forum. (Ignores other inner links.)" property_type="value" value_type="boolean" depends_on="" value_group="" display_order="0" addon_id="">
+      <value>1</value>
+    </property>
+    <property property_name="uix_nodeDescription" group_name="nodeList" title="Node Description" description="Styles the description of level 2 nodes" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-fontSizeSmall",
+    "color": "@xf-textColorDimmed"
+}</value>
+    </property>
+    <property property_name="uix_nodePadding" group_name="nodeList" title="Node padding" description="" property_type="value" value_type="unit" depends_on="" value_group="" display_order="2300" addon_id="">
+      <value>"@xf-paddingMedium"</value>
+    </property>
+    <property property_name="uix_noticeLocation" group_name="misc" title="Block notice location" description="" property_type="value" value_type="select" depends_on="" value_group="" display_order="0" addon_id="">
+      <value_parameters>aboveMainContainer=Default (above main container)
+mainContainerTop= Top of main container
+aboveMainContent=Above main content
+mainContentTop=Top of main content</value_parameters>
+      <value>"mainContainerTop"</value>
+    </property>
+    <property property_name="uix_pageStyle" group_name="page" title="Page style" description="Sets the overall page style for the theme." property_type="value" value_type="select" depends_on="" value_group="page" display_order="200" addon_id="">
+      <value_parameters>covered=Default (covered)
+fixed=Fixed
+wrapped=Wrapped</value_parameters>
+      <value>"wrapped"</value>
+    </property>
+    <property property_name="uix_pageWrapper" group_name="page" title="Page Wrapper" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,extra" addon_id="">
+      <value>{
+    "background-color": "#e4e4e4",
+    "border-width": "0",
+    "border-color": "rgba(0, 0, 0, 0.1)",
+    "border-radius": "@xf-borderRadiusMedium",
+    "extra": "padding: 0 !important;"
+}</value>
+    </property>
+    <property property_name="uix_removeBottomBreadcrumb" group_name="uix_breadcrumb" title="Remove bottom breadcrumb" description="" property_type="value" value_type="boolean" depends_on="" value_group="" display_order="50" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_removeIndexPageTitle" group_name="uix_globalSettings" title="Remove Title from Forum Index" description="Removes the page title from the forum index. Note: Only applicable when there are no other components in titlebar (such as page action or sidebar toggle.)" property_type="value" value_type="boolean" depends_on="" value_group="" display_order="100" addon_id="">
+      <value>1</value>
+    </property>
+    <property property_name="uix_responsiveLogoFontSize" group_name="basic" title="Responsive logo font size" description="Sets a font size to override logo font size at a specific breakpoint" property_type="value" value_type="string" depends_on="" value_group="uix_logoText" display_order="1300" addon_id="">
+      <value>"30px"</value>
+    </property>
+    <property property_name="uix_rightAlignNavigation" group_name="headerNav" title="Right align navigation" description="Aligns the navigation and section links to the right side" property_type="value" value_type="boolean" depends_on="" value_group="navigation" display_order="1900" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_searchBar" group_name="uix_search" title="Search Bar" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-contentBg",
+    "border-radius": "@xf-borderRadiusMedium"
+}</value>
+    </property>
+    <property property_name="uix_searchBarFocus" group_name="uix_search" title="Search bar (focus)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,padding,extra" addon_id="">
+      <value>{
+    "color": "@xf-textColor",
+    "background-color": "@xf-contentBg"
+}</value>
+    </property>
+    <property property_name="uix_searchBarHeight" group_name="uix_search" title="Search bar height" description="" property_type="value" value_type="unit" depends_on="" value_group="" display_order="10" addon_id="">
+      <value>"30px"</value>
+    </property>
+    <property property_name="uix_searchBarWidth" group_name="uix_search" title="Search bar width" description="(Required for minimal search animation)" property_type="value" value_type="unit" depends_on="" value_group="" display_order="20" addon_id="">
+      <value>"150px"</value>
+    </property>
+    <property property_name="uix_searchIcon" group_name="uix_search" title="Search icon" description="Styles the search icon" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-uix_iconSizeLarge",
+    "color": "@xf-textColorMuted",
+    "padding": "@xf-paddingSmall",
+    "extra": "float: left;"
+}</value>
+    </property>
+    <property property_name="uix_searchIconFocusColor" group_name="uix_search" title="Search icon color (focus)" description="" property_type="value" value_type="color" depends_on="" value_group="uix_searchColor" display_order="2200" addon_id="">
+      <value>"rgb(222, 222, 222)"</value>
+    </property>
+    <property property_name="uix_searchPosition" group_name="uix_search" title="Search position" description="Sets where the search bar appears" property_type="value" value_type="select" depends_on="" value_group="" display_order="200" addon_id="">
+      <value_parameters>staffBar=Staff bar (right)
+navigation=Navigation (right)
+navigationLeft=Navigation (left)
+tablinks=Sub navigation (right)
+header=Header row (right)</value_parameters>
+      <value>"navigation"</value>
+    </property>
+    <property property_name="uix_search_maxResponsiveWidth" group_name="uix_search" title="Viewport Width to Show Search Icon" description="Enter the maximum viewport width at which the search icon replaces the search bar." property_type="value" value_type="string" depends_on="" value_group="uix_searchIcon" display_order="1000" addon_id="">
+      <value>"1000000px"</value>
+    </property>
+    <property property_name="uix_sidebarLocation" group_name="uix_sidebar" title="Sidebar to Left" description="Moves the sidebar to the left of the main content" property_type="value" value_type="select" depends_on="" value_group="" display_order="400" addon_id="">
+      <value_parameters>left=Left
+right=Right</value_parameters>
+      <value>"left"</value>
+    </property>
+    <property property_name="uix_sidebarWidgetHeading" group_name="uix_sidebar" title="Sidebar widget heading" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,border_radius,border_width_simple,border_color_simple,border_radius_simple,padding,extra" addon_id="">
+      <value>{
+    "background-color": "#eaeaea",
+    "border-bottom-width": "1px",
+    "border-bottom-color": "@xf-borderColor",
+    "extra": "line-height: 2;"
+}</value>
+    </property>
+    <property property_name="uix_staffBarTab" group_name="headerNav" title="Staff tools bar tab" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "rgba(255,255,255,.7)",
+    "padding-top": "@xf-paddingMedium",
+    "padding-bottom": "@xf-paddingMedium",
+    "extra": "margin: 0;"
+}</value>
+    </property>
+    <property property_name="uix_staffBarTabHover" group_name="headerNav" title="Staff tools bar tab (hover)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "#fff"
+}</value>
+    </property>
+    <property property_name="uix_stickyCategoryStrips" group_name="nodeList" title="Sticky category strips" description="Category strips will stick to the top of the page for the category that is currently in view." property_type="value" value_type="boolean" depends_on="" value_group="uix_nodeCategories" display_order="1300" addon_id="">
+      <value>0</value>
+    </property>
+    <property property_name="uix_stickyNavigationStyle" group_name="headerNav" title="Navigation row (sticky)" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-color": "@xf-uix_secondaryColor"
+}</value>
+    </property>
+    <property property_name="uix_stickySectionLinkHeight" group_name="headerNav" title="Sticky sub navigation height" description="Sets the height for the sticky section links bar" property_type="value" value_type="unit" depends_on="" value_group="uix_subNav" display_order="8000" addon_id="">
+      <value>"45px"</value>
+    </property>
+    <property property_name="uix_subForumTitle" group_name="nodeList" title="Sub-forum title" description="Styles the sub forum titles when they are displayed" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background,border,padding,extra" addon_id="">
+      <value>{
+    "color": "@xf-textColor"
+}</value>
+    </property>
+    <property property_name="uix_textSelection" group_name="uix_globalSettings" title="Highlighted/selected Text" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="text,background" addon_id="">
+      <value>{
+    "color": "#fff",
+    "background-color": "@xf-uix_primaryColorDarker"
+}</value>
+    </property>
+    <property property_name="uix_titlebarLocation" group_name="uix_globalSettings" title="Titlebar location" description="Sets where the titlebar should appear in the page" property_type="value" value_type="select" depends_on="" value_group="" display_order="300" addon_id="">
+      <value_parameters>aboveMainContainer=Default (above main container)
+mainContainerTop= Top of main container
+aboveMainContent=Above main content
+mainContentTop=Top of main content
+header=Bottom of header
+belowHeader=Below header</value_parameters>
+      <value>"mainContainerTop"</value>
+    </property>
+    <property property_name="uix_topBreadcrumbLocation" group_name="uix_breadcrumb" title="Top breadcrumb location" description="" property_type="value" value_type="select" depends_on="" value_group="" display_order="100" addon_id="">
+      <value_parameters>aboveMainContainer=Default (above main container)
+mainContainerTop= Top of main container
+aboveMainContent=Above main content
+mainContentTop=Top of main content
+header=Bottom of header</value_parameters>
+      <value>"header"</value>
+    </property>
+    <property property_name="uix_userTabsPosition" group_name="headerNav" title="Visitor tabs position" description="" property_type="value" value_type="select" depends_on="" value_group="uix_loginTabs" display_order="2200" addon_id="">
+      <value_parameters>staffBar=Staff bar
+navigation=Navigation
+tablinks=Sub navigation
+header=Logo block</value_parameters>
+      <value>"navigation"</value>
+    </property>
+    <property property_name="uix_viewportRemoveVisitorTabsText" group_name="headerNav" title="Viewport width to remove visitor tab text" description="Sets the minimum viewport width to display the conversations, alert and username text." property_type="value" value_type="unit" depends_on="uix_removeVisitorTabsText" value_group="uix_loginTabs" display_order="2280" addon_id="">
+      <value>"10000px"</value>
+    </property>
+    <property property_name="uix_welcomeSectionLocation" group_name="uix_welcomeSection" title="Welcome section location" description="Chooses where to insert the welcome section" property_type="value" value_type="select" depends_on="" value_group="" display_order="200" addon_id="">
+      <value_parameters>aboveMainContainer=Default (above main container)
+mainContainerTop= Top of main container
+aboveMainContent=Above main content
+mainContentTop=Top of main content
+header=Bottom of header
+sidebar=Sidebar</value_parameters>
+      <value>"header"</value>
+    </property>
+    <property property_name="uix_welcomeSectionText__style" group_name="uix_welcomeSection" title="Welcome section text" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="40" css_components="text,padding,extra" addon_id="">
+      <value>{
+    "font-size": "@xf-fontSizeLarge",
+    "color": "#fff",
+    "padding-top": "@xf-paddingSmall",
+    "padding-bottom": "@xf-paddingLarge"
+}</value>
+    </property>
+    <property property_name="uix_welcomeSectionTitle__style" group_name="uix_welcomeSection" title="Welcome section title" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="30" css_components="text,padding,extra" addon_id="">
+      <value>{
+    "font-size": "34px",
+    "extra": "margin: 0;\nfont-family: @xf-uix_headingFont;"
+}</value>
+    </property>
+    <property property_name="uix_welcomeSection__style" group_name="uix_welcomeSection" title="Welcome section container" description="" property_type="css" value_type="" depends_on="" value_group="" display_order="0" css_components="background,border,border_radius,padding,extra" addon_id="">
+      <value>{
+    "background-image": "@xf-uix_imagePath/images/welcome-earth.svg",
+    "border-radius": "@xf-borderRadiusMedium",
+    "padding-top": "60px",
+    "padding-bottom": "0",
+    "extra": "background-size: 160px;\nbackground-repeat: no-repeat;\nbackground-position: 10% 50%;"
+}</value>
+    </property>
+  </properties>
+</style>
